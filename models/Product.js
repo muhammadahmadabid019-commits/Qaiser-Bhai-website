@@ -5,7 +5,8 @@ const ProductSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    index: true
   },
   slug: {
     type: String,
@@ -18,7 +19,8 @@ const ProductSchema = new mongoose.Schema({
   price: {
     type: Number,
     required: true,
-    min: 0
+    min: 0,
+    index: true
   },
   previousPrice: {
     type: Number,
@@ -40,7 +42,8 @@ const ProductSchema = new mongoose.Schema({
   brand: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    index: true
   },
   keyFeatures: {
     type: [String],

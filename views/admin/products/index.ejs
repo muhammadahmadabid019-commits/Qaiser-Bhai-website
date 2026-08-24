@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h2 style="font-weight: 700; color: #0a1628;">Manage Products</h2>
-  <a href="/admin/products/new" class="btn btn-primary" style="background-color: #1a73e8; border: none;">
+  <h2 style="font-weight: 700; color: #0A2347;">Manage Products</h2>
+  <a href="/admin/products/new" class="btn btn-admin-primary">
     <i class="fas fa-plus"></i> Add New Product
   </a>
 </div>
@@ -46,7 +46,7 @@
               <tr>
                 <td>
                   <img src="<%= product.image %>" alt="<%= product.name %>"
-                    style="width: 50px; height: 50px; object-fit: contain; background: #f8f9fa; border-radius: 4px;">
+                    style="width: 50px; height: 50px; object-fit: contain; background: #eef2f9; border-radius: 4px;">
                 </td>
                 <td class="fw-semibold">
                   <%= product.name %>
@@ -81,6 +81,7 @@
                   </a>
                   <form action="/admin/products/delete/<%= product._id %>" method="POST" class="d-inline"
                     onsubmit="return confirm('WARNING: Are you sure you want to permanently delete this product?');">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <button type="submit" class="btn btn-sm btn-outline-danger">
                       <i class="fas fa-trash"></i> Delete
                     </button>

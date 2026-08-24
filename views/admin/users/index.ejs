@@ -1,5 +1,5 @@
 <div class="mb-4">
-  <h2 style="font-weight: 700; color: #0a1628;">Manage Admins</h2>
+  <h2 style="font-weight: 700; color: #0A2347;">Manage Admins</h2>
   <p class="text-muted mb-0">Grant or revoke admin access using a registered user's email address.</p>
 </div>
 
@@ -9,12 +9,13 @@
     <div class="card-box h-100">
       <h5 class="mb-3"><i class="fas fa-user-shield me-2 text-primary"></i>Grant Admin Access</h5>
       <form action="/admin/users/make-admin" method="POST">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="mb-3">
           <label class="form-label fw-bold">Email Address</label>
           <input type="email" name="email" class="form-control" placeholder="user@example.com" required>
           <small class="text-muted">The user must already have an account (registered via Sign Up).</small>
         </div>
-        <button type="submit" class="btn btn-primary" style="background-color: #1a73e8; border: none;">
+        <button type="submit" class="btn btn-admin-primary">
           <i class="fas fa-user-plus"></i> Add Admin
         </button>
       </form>
@@ -27,6 +28,7 @@
       <h5 class="mb-3"><i class="fas fa-user-minus me-2 text-danger"></i>Revoke Admin Access</h5>
       <form action="/admin/users/remove-admin" method="POST"
         onsubmit="return confirm('Remove admin access from this email?');">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="mb-3">
           <label class="form-label fw-bold">Email Address</label>
           <input type="email" name="email" class="form-control" placeholder="user@example.com" required>

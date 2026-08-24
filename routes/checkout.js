@@ -88,12 +88,27 @@ const PAKISTAN_PROVINCES = [
 
 // Helper: read + hydrate cart from cookie, return items + subtotal
 async function getCartFromCookie(req) {
-  const cartCookie = req.cookies.cart ? JSON.parse(req.cookies.cart) : [];
+  let cartCookie = [];
+  if (req.cookies.cart) {
+    try {
+      const parsed = JSON.parse(req.cookies.cart);
+      cartCookie = Array.isArray(parsed) ? parsed : [];
+    } catch (err) {
+      cartCookie = [];
+    }
+  }
+
+  // One query for the whole cart instead of one query per item (N+1).
+  const validIds = cartCookie
+    .filter(item => mongoose.isValidObjectId(item.productId))
+    .map(item => item.productId);
+  const products = await Product.find({ _id: { $in: validIds } });
+  const productsById = new Map(products.map(p => [p._id.toString(), p]));
+
   const cartItems = [];
   let subtotal = 0;
-
-  for (let item of cartCookie) {
-    const product = await Product.findById(item.productId);
+  for (const item of cartCookie) {
+    const product = productsById.get(item.productId);
     if (product) {
       cartItems.push({ product, quantity: item.quantity });
       subtotal += product.price * item.quantity;

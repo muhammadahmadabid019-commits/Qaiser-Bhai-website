@@ -5,35 +5,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>
-    <%= typeof title !=='undefined' ? title : 'SecureNet Admin' %>
+    <%= typeof title !=='undefined' ? title + ' - unieQ Solutions Admin' : 'unieQ Solutions Admin' %>
   </title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" type="image/png" href="/images/unieq-logo.png">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --admin-navy-dark: #061B3A;
+      --admin-navy: #0A2347;
+      --admin-red: #e52e2e;
+      --admin-red-dark: #b91c1c;
+      --admin-bg: #eef2f9;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #f4f7f6;
+      background-color: var(--admin-bg);
       display: flex;
       min-height: 100vh;
       margin: 0;
     }
 
+    h1, h2, h3, h4, h5, h6 { color: var(--admin-navy); }
+
     .admin-sidebar {
-      width: 250px;
-      background-color: #0a1628;
+      width: 260px;
+      background: linear-gradient(180deg, var(--admin-navy-dark), var(--admin-navy));
       color: #fff;
       display: flex;
       flex-direction: column;
       position: fixed;
       height: 100vh;
+      border-right: 1px solid rgba(229,46,46,0.25);
     }
 
     .admin-brand {
-      padding: 20px;
-      font-size: 1.5rem;
+      padding: 18px 20px;
+      font-size: 1.25rem;
       font-weight: 700;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(229,46,46,0.22);
       display: flex;
       align-items: center;
       gap: 10px;
@@ -41,42 +57,123 @@
       text-decoration: none;
     }
 
+    .admin-brand img {
+      height: 32px;
+      width: auto;
+      object-fit: contain;
+    }
+
     .admin-nav {
       list-style: none;
       padding: 0;
-      margin: 20px 0;
+      margin: 14px 0;
+      flex: 1;
+      overflow-y: auto;
     }
 
     .admin-nav li a {
       color: #a8c4e0;
       text-decoration: none;
-      padding: 15px 20px;
+      padding: 13px 20px;
       display: flex;
       align-items: center;
-      gap: 15px;
-      transition: all 0.3s;
+      gap: 14px;
+      font-size: 0.92rem;
+      font-weight: 500;
+      border-left: 3px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .admin-nav li a i {
+      width: 18px;
+      text-align: center;
+      color: #7a92b0;
+      transition: color 0.2s ease;
     }
 
     .admin-nav li a:hover,
     .admin-nav li a.active {
-      background-color: #1a73e8;
+      background: rgba(229,46,46,0.14);
       color: #fff;
+      border-left-color: var(--admin-red);
+    }
+
+    .admin-nav li a:hover i,
+    .admin-nav li a.active i {
+      color: #ff5252;
     }
 
     .admin-main {
       flex: 1;
-      margin-left: 250px;
+      margin-left: 260px;
       padding: 30px;
-      background-color: #f8f9fa;
+      background-color: var(--admin-bg);
       min-height: 100vh;
       max-width: 100%;
     }
 
     .card-box {
       background: #fff;
+      border: 1px solid rgba(229,46,46,0.1);
       border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 18px rgba(10,35,71,0.06);
       padding: 20px;
+    }
+
+    /* On-brand red button, used in place of Bootstrap's default blue
+       btn-primary throughout the admin panel. Defined as its own class
+       (not an inline style override) so :hover/:focus stay red too —
+       an inline background-color can't override the stylesheet's
+       .btn-primary:hover rule, which was leaving buttons flashing back
+       to Bootstrap's default blue on hover. */
+    .btn-admin-primary {
+      background: linear-gradient(135deg, var(--admin-red), var(--admin-red-dark));
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      transition: all 0.25s ease;
+    }
+
+    .btn-admin-primary:hover,
+    .btn-admin-primary:focus {
+      background: linear-gradient(135deg, #d42525, #a51616);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(229,46,46,0.3);
+    }
+
+    /* Re-colors every plain Bootstrap "primary" component (buttons, text,
+       focus rings) from Bootstrap's default blue to the site's red, by
+       overriding the same --bs-btn-* custom properties Bootstrap's own
+       compiled CSS reads from — this cascades correctly through
+       hover/active/disabled states without touching every view file. */
+    .btn-primary,
+    .btn-outline-primary {
+      --bs-btn-color: #fff;
+      --bs-btn-bg: var(--admin-red);
+      --bs-btn-border-color: var(--admin-red);
+      --bs-btn-hover-color: #fff;
+      --bs-btn-hover-bg: var(--admin-red-dark);
+      --bs-btn-hover-border-color: var(--admin-red-dark);
+      --bs-btn-focus-shadow-rgb: 229, 46, 46;
+      --bs-btn-active-color: #fff;
+      --bs-btn-active-bg: var(--admin-red-dark);
+      --bs-btn-active-border-color: var(--admin-red-dark);
+      --bs-btn-disabled-bg: var(--admin-red);
+      --bs-btn-disabled-border-color: var(--admin-red);
+    }
+    .btn-outline-primary {
+      --bs-btn-color: var(--admin-red);
+      --bs-btn-bg: transparent;
+      --bs-btn-disabled-color: var(--admin-red);
+    }
+    .text-primary { color: var(--admin-red) !important; }
+    .form-check-input:checked {
+      background-color: var(--admin-red);
+      border-color: var(--admin-red);
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--admin-red);
+      box-shadow: 0 0 0 0.25rem rgba(229,46,46,0.15);
     }
 
     .admin-sidebar-toggle {
@@ -85,7 +182,7 @@
       justify-content: center;
       width: 42px;
       height: 42px;
-      background: #0a1628;
+      background: linear-gradient(135deg, var(--admin-red), var(--admin-red-dark));
       color: #fff;
       border: none;
       border-radius: 8px;
@@ -98,8 +195,8 @@
       display: none;
     }
 
-    /* Below tablet width, the fixed 250px sidebar leaves almost no room
-       for content (e.g. ~125px on a 375px phone), forcing every admin
+    /* Below tablet width, the fixed 260px sidebar leaves almost no room
+       for content (e.g. ~115px on a 375px phone), forcing every admin
        page's tables/cards to overflow horizontally. Collapse it to an
        off-canvas panel instead, toggled by a hamburger button, same
        pattern as the public site's mobile nav. */
@@ -138,40 +235,46 @@
 
   <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop"></div>
 
+  <%
+    // Marks the sidebar link for the section the admin is currently on.
+    // currentPath comes from server.js's global locals middleware.
+    const isActiveSection = (prefix) => (typeof currentPath !== 'undefined' && currentPath.startsWith(prefix)) ? 'active' : '';
+  %>
   <div class="admin-sidebar" id="adminSidebar">
     <a href="/admin/dashboard" class="admin-brand">
-      <i class="fas fa-shield-halved"></i> Admin Panel
+      <img src="/images/unieq-logo.png" alt="unieQ Solutions">
+      Admin Panel
     </a>
     <ul class="admin-nav">
       <li>
-        <a href="/admin/dashboard"><i class="fas fa-gauge-high"></i> Dashboard</a>
+        <a href="/admin/dashboard" class="<%= isActiveSection('/admin/dashboard') %>"><i class="fas fa-gauge-high"></i> Dashboard</a>
       </li>
       <li>
-        <a href="/admin/orders"><i class="fas fa-receipt"></i> Orders</a>
+        <a href="/admin/orders" class="<%= isActiveSection('/admin/orders') %>"><i class="fas fa-receipt"></i> Orders</a>
       </li>
       <li>
-        <a href="/admin/reviews"><i class="fas fa-star"></i> Reviews</a>
+        <a href="/admin/reviews" class="<%= isActiveSection('/admin/reviews') %>"><i class="fas fa-star"></i> Reviews</a>
       </li>
       <li>
-        <a href="/admin/products"><i class="fas fa-box"></i> Products</a>
+        <a href="/admin/products" class="<%= isActiveSection('/admin/products') %>"><i class="fas fa-box"></i> Products</a>
       </li>
       <li>
-        <a href="/admin/categories"><i class="fas fa-layer-group"></i> Categories</a>
+        <a href="/admin/categories" class="<%= isActiveSection('/admin/categories') %>"><i class="fas fa-layer-group"></i> Categories</a>
       </li>
       <li>
-        <a href="/admin/subcategories"><i class="fas fa-sitemap"></i> Subcategories</a>
+        <a href="/admin/subcategories" class="<%= isActiveSection('/admin/subcategories') %>"><i class="fas fa-sitemap"></i> Subcategories</a>
       </li>
       <li>
-        <a href="/admin/users"><i class="fas fa-user-shield"></i> Manage Admins</a>
+        <a href="/admin/users" class="<%= isActiveSection('/admin/users') %>"><i class="fas fa-user-shield"></i> Manage Admins</a>
       </li>
       <li>
-        <a href="/admin/quotes"><i class="fas fa-file-invoice"></i> Quote Requests</a>
+        <a href="/admin/quotes" class="<%= isActiveSection('/admin/quotes') %>"><i class="fas fa-file-invoice"></i> Quote Requests</a>
       </li>
       <li>
-        <a href="/admin/payment-settings"><i class="fas fa-money-check-alt"></i> Payment Settings</a>
+        <a href="/admin/payment-settings" class="<%= isActiveSection('/admin/payment-settings') %>"><i class="fas fa-money-check-alt"></i> Payment Settings</a>
       </li>
       <li>
-        <a href="/admin/order-retention"><i class="fas fa-clock-rotate-left"></i> Order Retention</a>
+        <a href="/admin/order-retention" class="<%= isActiveSection('/admin/order-retention') %>"><i class="fas fa-clock-rotate-left"></i> Order Retention</a>
       </li>
       <li>
         <a href="/"><i class="fas fa-home"></i> View Site</a>

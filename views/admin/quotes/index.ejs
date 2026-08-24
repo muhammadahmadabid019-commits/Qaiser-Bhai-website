@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-  <h2 style="font-weight: 700; color: #0a1628;">Quote Requests</h2>
+  <h2 style="font-weight: 700; color: #0A2347;">Quote Requests</h2>
   <div class="d-flex align-items-center gap-2">
     <span class="badge bg-secondary" id="totalCountBadge"><%= quotes.length %> total</span>
     <a href="#" id="exportCsvBtn" class="btn btn-sm btn-outline-primary">
@@ -111,7 +111,7 @@
 <div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1080;"></div>
 
 <style>
-  .status-filter-btn.active { background-color: #1a73e8; color: #fff; border-color: #1a73e8; }
+  .status-filter-btn.active { background-color: #e52e2e; color: #fff; border-color: #e52e2e; }
   .quote-message-preview { max-width: 260px; white-space: normal; word-break: break-word; }
   .quote-status-select { min-width: 130px; }
   @media (max-width: 767px) {
@@ -122,6 +122,7 @@
 
 <script>
 (function() {
+  const CSRF_TOKEN = <%- JSON.stringify(csrfToken) %>;
   const QUOTE_STATUSES = <%- JSON.stringify(quoteStatuses) %>;
   let quotes = <%- JSON.stringify(quotes.map(q => ({
     id: q._id.toString(),
@@ -325,7 +326,7 @@
 
     fetch('/admin/quotes/' + id + '/status', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
       body: JSON.stringify({ status: newStatus })
     })
       .then(function(r) { return r.json().then(function(body) { return { ok: r.ok, body: body }; }); })
@@ -390,7 +391,7 @@
 
     fetch('/admin/quotes/' + id + '/status', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
       body: JSON.stringify({ status: newStatus })
     })
       .then(function(r) { return r.json().then(function(body) { return { ok: r.ok, body: body }; }); })
@@ -448,7 +449,7 @@
 
     fetch(url, {
       method: 'POST',
-      headers: isBulk ? { 'Content-Type': 'application/json' } : {},
+      headers: isBulk ? { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN } : { 'X-CSRF-Token': CSRF_TOKEN },
       body: payload
     })
       .then(function(r) { return r.json().then(function(body) { return { ok: r.ok, body: body }; }); })
@@ -475,7 +476,7 @@
 
     fetch('/admin/quotes/bulk/status', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
       body: JSON.stringify({ ids: ids, status: status })
     })
       .then(function(r) { return r.json().then(function(body) { return { ok: r.ok, body: body }; }); })

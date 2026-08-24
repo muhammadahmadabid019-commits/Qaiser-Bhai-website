@@ -3,30 +3,35 @@ const router = express.Router();
 const Category = require('../../models/Category');
 const Subcategory = require('../../models/Subcategory');
 const Product = require('../../models/Product');
+const { escapeRegex } = require('../../utils/validation');
 
 // List all subcategories
 router.get('/', async (req, res) => {
   try {
     let query = {};
     let search = req.query.search;
-    
+
     if (search) {
-      const matchingCategories = await Category.find({ name: { $regex: search, $options: 'i' } });
+      const safeSearch = escapeRegex(search);
+      const matchingCategories = await Category.find({ name: { $regex: safeSearch, $options: 'i' } });
       const categoryIds = matchingCategories.map(cat => cat._id);
-      
+
       query = {
         $or: [
-          { name: { $regex: search, $options: 'i' } },
+          { name: { $regex: safeSearch, $options: 'i' } },
           { category: { $in: categoryIds } }
         ]
       };
     }
 
     const subcategories = await Subcategory.find(query).populate('category').sort('name');
+
+    // One aggregate query instead of one query per subcategory (N+1).
+    const productCounts = await Product.aggregate([{ $group: { _id: '$subcategory', count: { $sum: 1 } } }]);
     const counts = {};
-    for (const sub of subcategories) {
-      counts[sub._id] = await Product.countDocuments({ subcategory: sub._id });
-    }
+    subcategories.forEach(sub => { counts[sub._id] = 0; });
+    productCounts.forEach(pc => { if (pc._id && counts[pc._id] !== undefined) counts[pc._id] = pc.count; });
+
     res.render('admin/subcategories/index', { title: 'Manage Subcategories', subcategories, counts, search });
   } catch (err) {
     console.error(err);
@@ -71,7 +76,9 @@ router.get('/edit/:id', async (req, res) => {
     }
     res.render('admin/subcategories/edit', { title: 'Edit Subcategory', subcategory, categories });
   } catch (err) {
-    res.status(500).send('Server Error');
+    console.error(err);
+    req.flash('error', 'Subcategory not found.');
+    res.redirect('/admin/subcategories');
   }
 });
 

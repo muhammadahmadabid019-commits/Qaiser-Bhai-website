@@ -7,8 +7,10 @@ const Category = require('../models/Category');
 const User = require('../models/User');
 const Order = require('../models/Order');
 const verifyToken = require('../middlewares/verifyToken');
+const { loginLimiter } = require('../middlewares/rateLimiters');
 const { CURRENCY_CODE, calcDeliveryFee } = require('../utils/currency');
 const { deductStockForItems } = require('../services/inventoryService');
+const { escapeRegex } = require('../utils/validation');
 
 // ==========================================
 // 1. PUBLIC ENDPOINTS
@@ -29,7 +31,7 @@ router.get('/products', async (req, res) => {
 
     // Search by name
     if (req.query.search) {
-      query.name = { $regex: req.query.search, $options: 'i' };
+      query.name = { $regex: escapeRegex(req.query.search), $options: 'i' };
     }
 
     // Filter by category
@@ -118,7 +120,7 @@ router.get('/products/:id', async (req, res) => {
  * @desc    Sign in user and return JWT token
  * @access  Public
  */
-router.post('/auth/login', async (req, res) => {
+router.post('/auth/login', loginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
 

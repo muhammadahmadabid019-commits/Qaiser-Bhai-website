@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const { loginLimiter } = require('../middlewares/rateLimiters');
 
 // GET /auth/register
 router.get('/register', (req, res) => {
@@ -76,7 +77,7 @@ router.get('/login', (req, res) => {
 });
 
 // POST /auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -102,22 +103,12 @@ router.post('/login', async (req, res) => {
     req.session.userName = user.name;
     req.session.userRole = user.role;
 
-    console.log('--- ADMIN LOGIN REDIRECT DEBUG ---');
-    console.log('User model from DB:', {
-      id: user._id,
-      email: user.email,
-      role: user.role,
-      roleLower: user.role ? user.role.toLowerCase() : null
-    });
-
     req.session.save((err) => {
       if (err) console.error('Session save error:', err);
       req.flash('success', `Welcome back, ${user.name}!`);
       if (user.role && user.role.trim().toLowerCase() === 'admin') {
-        console.log('Redirecting to /admin/products...');
         return res.redirect('/admin/products');
       }
-      console.log('Redirecting to / (Default)...');
       res.redirect('/');
     });
   } catch (err) {

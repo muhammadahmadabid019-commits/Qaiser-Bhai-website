@@ -11,4 +11,12 @@ const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // are a general inquiry channel where a +92-prefixed number is common.
 const PAKISTAN_MOBILE_FORMAT = /^(?:\+92|0)3\d{9}$/;
 
-module.exports = { EMAIL_FORMAT, PAKISTAN_MOBILE_FORMAT };
+// Escapes regex metacharacters in user-supplied search terms before they're
+// interpolated into a Mongo $regex query. Without this, a query like
+// `?search=(a+)+$` gets passed straight to the regex engine and can trigger
+// catastrophic backtracking (ReDoS) on every request.
+function escapeRegex(str) {
+  return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+module.exports = { EMAIL_FORMAT, PAKISTAN_MOBILE_FORMAT, escapeRegex };

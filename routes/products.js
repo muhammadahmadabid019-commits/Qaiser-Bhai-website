@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const Subcategory = require('../models/Subcategory');
+const { escapeRegex } = require('../utils/validation');
 
 // Priority ordering for customer-facing product catalog:
 // Priority 1: Main Products (CCTV, Networking, Racks, Power)
@@ -20,10 +22,15 @@ const CATEGORY_PRIORITY = {
   'HDMI & Display Accessories': 9
 };
 
-function getCategoryPriority(product) {
-  if (!product.category || !product.category.name) return 99;
-  return CATEGORY_PRIORITY[product.category.name] || 99;
-}
+// $switch branches mirroring CATEGORY_PRIORITY, for sorting server-side
+// (aggregation) instead of loading every matching product into memory.
+const CATEGORY_PRIORITY_SWITCH = {
+  branches: Object.entries(CATEGORY_PRIORITY).map(([name, priority]) => ({
+    case: { $eq: ['$category.name', name] },
+    then: priority
+  })),
+  default: 99
+};
 
 router.get('/', async (req, res) => {
   try {
@@ -31,50 +38,48 @@ router.get('/', async (req, res) => {
     const limit = 8;
     const skip = (page - 1) * limit;
 
-    // Build the query object for filtering
-    const query = {};
+    // Build the match stage for filtering
+    const matchStage = {};
 
     // Search by name
     if (req.query.search) {
-      query.name = { $regex: req.query.search, $options: 'i' };
+      matchStage.name = { $regex: escapeRegex(req.query.search), $options: 'i' };
     }
 
     // Filter by category
-    if (req.query.category && req.query.category !== '') {
-      query.category = req.query.category;
+    if (req.query.category && req.query.category !== '' && mongoose.isValidObjectId(req.query.category)) {
+      matchStage.category = new mongoose.Types.ObjectId(req.query.category);
     }
 
     // Filter by subcategory
-    if (req.query.subcategory && req.query.subcategory !== '') {
-      query.subcategory = req.query.subcategory;
+    if (req.query.subcategory && req.query.subcategory !== '' && mongoose.isValidObjectId(req.query.subcategory)) {
+      matchStage.subcategory = new mongoose.Types.ObjectId(req.query.subcategory);
     }
 
     // Filter by price range
     if (req.query.minPrice || req.query.maxPrice) {
-      query.price = {};
-      if (req.query.minPrice) query.price.$gte = Number(req.query.minPrice);
-      if (req.query.maxPrice) query.price.$lte = Number(req.query.maxPrice);
+      matchStage.price = {};
+      if (req.query.minPrice) matchStage.price.$gte = Number(req.query.minPrice);
+      if (req.query.maxPrice) matchStage.price.$lte = Number(req.query.maxPrice);
     }
 
-    const allProducts = await Product.find(query)
-      .populate('category')
-      .populate('subcategory')
-      .sort('-createdAt');
-
-    // Sort matching products by category priority first, then preserve existing
-    // order (newest first: -createdAt) within each category.
-    allProducts.sort((a, b) => {
-      const prioA = getCategoryPriority(a);
-      const prioB = getCategoryPriority(b);
-      if (prioA !== prioB) {
-        return prioA - prioB;
-      }
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    });
-
-    const totalProducts = allProducts.length;
+    const totalProducts = await Product.countDocuments(matchStage);
     const totalPages = Math.ceil(totalProducts / limit);
-    const products = allProducts.slice(skip, skip + limit);
+
+    // Sort matching products by category priority first, then newest first
+    // within each category — done in the DB via aggregation + $skip/$limit
+    // instead of loading the full matching set into Node and slicing it.
+    const products = await Product.aggregate([
+      { $match: matchStage },
+      { $lookup: { from: 'categories', localField: 'category', foreignField: '_id', as: 'category' } },
+      { $unwind: '$category' },
+      { $lookup: { from: 'subcategories', localField: 'subcategory', foreignField: '_id', as: 'subcategory' } },
+      { $unwind: { path: '$subcategory', preserveNullAndEmptyArrays: true } },
+      { $addFields: { categoryPriority: { $switch: CATEGORY_PRIORITY_SWITCH } } },
+      { $sort: { categoryPriority: 1, createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit }
+    ]);
 
     const categories = await Category.find({ type: 'product' }).sort('name');
     const subcategories = await Subcategory.find().sort('name');

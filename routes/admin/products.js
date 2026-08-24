@@ -5,10 +5,24 @@ const Category = require('../../models/Category');
 const Subcategory = require('../../models/Subcategory');
 const slugify = require('slugify');
 const multer = require('multer');
+const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
+const { escapeRegex } = require('../../utils/validation');
 
 // Multer Configuration
+//
+// NOTE on production storage: on serverless hosts (this project ships a
+// vercel.json), /tmp is the only writable path but it is ephemeral — files
+// written here do not survive past the current invocation/instance and
+// disappear on redeploy. Uploaded product images (and payment receipts,
+// see routes/admin/orders.js) will not persist reliably in that
+// environment. Fixing this properly means moving to persistent object
+// storage (S3 / Cloudinary / Vercel Blob), which needs its own account and
+// credentials from whoever owns the deployment — flagging it here rather
+// than wiring in a specific provider unasked. Running the app on a normal
+// long-lived Node host (not serverless) does not have this problem, since
+// ./public/uploads/products is a real persistent path there.
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const dir = process.env.NODE_ENV === 'production' ? '/tmp' : './public/uploads/products';
@@ -18,24 +32,69 @@ const storage = multer.diskStorage({
     cb(null, dir);
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname).toLowerCase());
   }
 });
 
+// Accepts any common image format/extension (not just jpeg/png/gif/webp)
+// so admins can upload straight from a phone or camera without converting
+// first. Still an allowlist of real image types, not "any file" — accepting
+// arbitrary extensions would open a file-upload vulnerability (e.g. .php).
+const ALLOWED_IMAGE_EXT = /\.(jpe?g|png|gif|webp|svg|bmp|tiff?|ico|avif|heic|heif)$/i;
+const ALLOWED_IMAGE_MIME = /^image\//i;
+
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5000000 },
+  limits: { fileSize: 8 * 1024 * 1024 },
   fileFilter: function (req, file, cb) {
-    const filetypes = /jpeg|jpg|png|gif|webp/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-    if (mimetype && extname) {
+    // Some browsers/phones send a generic or missing mimetype for less
+    // common formats (HEIC, AVIF); accept on a matching extension OR a
+    // real image/* mimetype rather than requiring both.
+    const extOk = ALLOWED_IMAGE_EXT.test(path.extname(file.originalname));
+    const mimeOk = ALLOWED_IMAGE_MIME.test(file.mimetype);
+    if (extOk || mimeOk) {
       return cb(null, true);
-    } else {
-      cb('Error: Images Only!');
     }
+    cb(new Error('Only image files are allowed (jpg, png, gif, webp, svg, bmp, tiff, avif, heic...).'));
   }
 });
+
+// Turns a multer error (or the fileFilter's rejection) into a flash message
+// and a redirect back to the form, instead of crashing the request.
+function handleUploadError(err, req, res, next) {
+  if (err instanceof multer.MulterError) {
+    const message = err.code === 'LIMIT_FILE_SIZE'
+      ? 'Image is too large (max 8MB).'
+      : `Upload failed: ${err.message}`;
+    req.flash('error', message);
+    return res.redirect(req.headers.referer || '/admin/products');
+  }
+  if (err) {
+    req.flash('error', err.message || 'Invalid image upload.');
+    return res.redirect(req.headers.referer || '/admin/products');
+  }
+  next();
+}
+
+// Resizes and compresses an uploaded product image so the site doesn't
+// serve full-resolution phone/camera photos (the main cause of slow page
+// loads — see the public/uploads audit). SVG (vector) and GIF (possibly
+// animated) are left untouched; everything else is converted to WebP.
+async function optimizeUploadedImage(file) {
+  const ext = path.extname(file.filename).toLowerCase();
+  if (ext === '.svg' || ext === '.gif') {
+    return `/uploads/products/${file.filename}`;
+  }
+
+  const optimizedName = file.filename.slice(0, -ext.length) + '.webp';
+  const optimizedPath = path.join(path.dirname(file.path), optimizedName);
+  await sharp(file.path)
+    .resize({ width: 1200, withoutEnlargement: true })
+    .webp({ quality: 82 })
+    .toFile(optimizedPath);
+  fs.unlinkSync(file.path);
+  return `/uploads/products/${optimizedName}`;
+}
 
 // Parse the freeform textarea fields (Key Features, Specifications) into structured data
 function parseProductBody(body) {
@@ -77,10 +136,11 @@ router.get('/', async (req, res) => {
 
     let query = {};
     if (search) {
+      const safeSearch = escapeRegex(search);
       query = {
         $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { brand: { $regex: search, $options: 'i' } }
+          { name: { $regex: safeSearch, $options: 'i' } },
+          { brand: { $regex: safeSearch, $options: 'i' } }
         ]
       };
     }
@@ -119,11 +179,11 @@ router.get('/new', async (req, res) => {
 });
 
 // Create Product
-router.post('/', upload.single('image'), async (req, res) => {
+router.post('/', upload.single('image'), handleUploadError, async (req, res) => {
   try {
     const productData = parseProductBody(req.body);
     if (req.file) {
-      productData.image = `/uploads/products/${req.file.filename}`;
+      productData.image = await optimizeUploadedImage(req.file);
     }
 
     try {
@@ -158,12 +218,14 @@ router.get('/edit/:id', async (req, res) => {
     }
     res.render('admin/products/edit', { title: 'Edit Product', product, categories, subcategories });
   } catch (err) {
-    res.status(500).send('Server Error');
+    console.error(err);
+    req.flash('error', 'Product not found.');
+    res.redirect('/admin/products');
   }
 });
 
 // Update Product
-router.post('/edit/:id', upload.single('image'), async (req, res) => {
+router.post('/edit/:id', upload.single('image'), handleUploadError, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) {
@@ -180,7 +242,7 @@ router.post('/edit/:id', upload.single('image'), async (req, res) => {
           fs.unlinkSync(oldImagePath);
         }
       }
-      updateData.image = `/uploads/products/${req.file.filename}`;
+      updateData.image = await optimizeUploadedImage(req.file);
     }
 
     // Use set()+save() (not findByIdAndUpdate) so the pre-save hook regenerates

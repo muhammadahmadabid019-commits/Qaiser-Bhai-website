@@ -275,7 +275,7 @@
                 <% cartItems.forEach(item=> { %>
                   <div class="checkout-item">
                     <div class="checkout-item-img">
-                      <img src="<%= item.product.image %>" alt="<%= item.product.name %>"
+                      <img src="<%= item.product.image %>" alt="<%= item.product.name %>" loading="lazy"
                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                       <div class="checkout-item-img-fallback" style="display:none;"><i class="fas fa-image"></i></div>
                       <span class="checkout-item-qty-badge">

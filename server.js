@@ -9,6 +9,9 @@ const { MongoStore } = require('connect-mongo');
 const flash = require('connect-flash');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
+const csrf = require('./middlewares/csrf');
 
 // Routes
 const indexRoutes = require('./routes/index');
@@ -35,6 +38,7 @@ const { isAdmin } = require('./middlewares/auth');
 const app = express();
 
 app.use(cors());
+app.use(compression());
 
 // Configuration
 const PORT = process.env.PORT || 3000;
@@ -86,7 +90,13 @@ app.locals.whatsappNumber = process.env.WHATSAPP_NUMBER || '923018999603';
 // Built-in Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+// Long cache lifetime for static assets (images, css, js) — the biggest
+// contributor to slow repeat page loads was every asset being re-fetched
+// on every request with no caching headers at all.
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: process.env.NODE_ENV === 'production' ? '30d' : 0,
+  etag: true
+}));
 app.use(cookieParser());
 
 // Session Configuration (stored in MongoDB)
@@ -95,7 +105,10 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: MONGO_URI }),
-  cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 day
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24, // 1 day
+    sameSite: 'lax' // baseline CSRF mitigation: cookie isn't sent on cross-site form POSTs
+  }
 }));
 
 // Flash Messages
@@ -108,6 +121,10 @@ app.use((req, res, next) => {
     success: req.flash('success'),
     error: req.flash('error')
   };
+
+  // Current request path, used by admin-layout.ejs to highlight the active
+  // sidebar section.
+  res.locals.currentPath = req.path;
 
   // Logged-in user info
   res.locals.currentUser = {
@@ -134,6 +151,10 @@ app.use('/admin', (req, res, next) => {
   res.locals.layout = 'admin-layout';
   next();
 });
+// CSRF protection for the admin panel's forms (issues/exposes a per-session
+// token to every admin view, and rejects state-changing requests that don't
+// carry a matching token).
+app.use('/admin', csrf.ensureToken, csrf.verifyToken);
 app.get('/admin', isAdmin, (req, res) => res.redirect('/admin/dashboard'));
 
 // Mount Routes

@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h2 style="font-weight: 700; color: #0a1628;">Manage Reviews</h2>
+  <h2 style="font-weight: 700; color: #0A2347;">Manage Reviews</h2>
 </div>
 
 <div class="mb-3">
@@ -55,6 +55,7 @@
               </td>
               <td class="text-end">
                 <form action="/admin/reviews/<%= review._id %>/status" method="POST" class="d-flex gap-1 justify-content-end align-items-center">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                   <select name="status" class="form-select form-select-sm" style="width:auto;">
                     <% statuses.forEach(s => { %>
                       <option value="<%= s %>" <%= review.status === s ? 'selected' : '' %>><%= s %></option>

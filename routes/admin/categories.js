@@ -3,6 +3,7 @@ const router = express.Router();
 const Category = require('../../models/Category');
 const Subcategory = require('../../models/Subcategory');
 const Product = require('../../models/Product');
+const { escapeRegex } = require('../../utils/validation');
 
 // List all categories
 router.get('/', async (req, res) => {
@@ -10,16 +11,20 @@ router.get('/', async (req, res) => {
     let query = {};
     let search = req.query.search;
     if (search) {
-      query.name = { $regex: search, $options: 'i' };
+      query.name = { $regex: escapeRegex(search), $options: 'i' };
     }
     const categories = await Category.find(query).sort('name');
+
+    // Two aggregate queries instead of 2 queries per category (N+1).
+    const [subCounts, productCounts] = await Promise.all([
+      Subcategory.aggregate([{ $group: { _id: '$category', count: { $sum: 1 } } }]),
+      Product.aggregate([{ $group: { _id: '$category', count: { $sum: 1 } } }])
+    ]);
     const counts = {};
-    for (const cat of categories) {
-      counts[cat._id] = {
-        subcategories: await Subcategory.countDocuments({ category: cat._id }),
-        products: await Product.countDocuments({ category: cat._id })
-      };
-    }
+    categories.forEach(cat => { counts[cat._id] = { subcategories: 0, products: 0 }; });
+    subCounts.forEach(sc => { if (counts[sc._id]) counts[sc._id].subcategories = sc.count; });
+    productCounts.forEach(pc => { if (counts[pc._id]) counts[pc._id].products = pc.count; });
+
     res.render('admin/categories/index', { title: 'Manage Categories', categories, counts, search });
   } catch (err) {
     console.error(err);
@@ -66,7 +71,9 @@ router.get('/edit/:id', async (req, res) => {
     }
     res.render('admin/categories/edit', { title: 'Edit Category', category });
   } catch (err) {
-    res.status(500).send('Server Error');
+    console.error(err);
+    req.flash('error', 'Category not found.');
+    res.redirect('/admin/categories');
   }
 });
 
