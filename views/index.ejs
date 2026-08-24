@@ -1,0 +1,392 @@
+  <section id="home" class="hero">
+    <div class="container text-center">
+      <p class="hero-tag"><i class="fas fa-network-wired"></i> One Source, Infinite Solutions</p>
+      <h1>Powering Your Business with <span class="blue">Smart IT & Networking</span></h1>
+      <p class="hero-sub">Complete IT infrastructure, servers, cloud management, and networking solutions tailored to your business.</p>
+      <a href="#services" class="btn btn-main me-2"><i class="fas fa-cogs"></i> Explore Services</a>
+      <a href="/products" class="btn btn-out"><i class="fas fa-shopping-bag"></i> Shop Now</a>
+    </div>
+  </section>
+
+  <section id="services" class="section bg-alt fade-in">
+    <div class="container">
+      <div class="text-center mb-5">
+        <span class="tag">What We Do</span>
+        <h2>Our <span class="blue">Services</span></h2>
+        <p class="sub">Comprehensive security and tech solutions for homes and businesses.</p>
+      </div>
+      <div class="row g-4 justify-content-center">
+
+        <% if (services.length === 0) { %>
+          <div class="col-12 text-center text-muted">
+            Services coming soon. Check back shortly!
+          </div>
+        <% } else { %>
+          <% services.forEach(svc => { %>
+            <div class="col-md-4">
+              <div class="card-box <%= svc.featured ? 'featured' : '' %>">
+                <% if (svc.featured) { %>
+                  <div class="ribbon">Most Popular</div>
+                <% } %>
+                <div class="icon-circle"><i class="fas <%= svc.icon || 'fa-cogs' %>"></i></div>
+                <h4><%= svc.name %></h4>
+                <p><%= svc.description %></p>
+                <% if (svc.features && svc.features.length > 0) { %>
+                  <ul>
+                    <% svc.features.forEach(f => { %>
+                      <li><i class="fas fa-check"></i> <%= f %></li>
+                    <% }) %>
+                  </ul>
+                <% } %>
+                
+                <% if (whatsappBookingEnabled) { %>
+                  <a href="https://wa.me/<%= whatsappNumber %>?text=<%= encodeURIComponent('Hello, I am interested in booking the "' + svc.name + '" service. Please provide me with more details.') %>" 
+                     target="_blank" 
+                     rel="noopener noreferrer" 
+                     class="btn btn-outline" 
+                     style="border-color: #25D366; color: #25D366;">
+                    <i class="fab fa-whatsapp"></i> Book via WhatsApp
+                  </a>
+                <% } else { %>
+                  <a href="#contact" class="btn btn-outline">Get a Quote</a>
+                <% } %>
+                
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="testimonials" class="section fade-in">
+    <div class="container">
+      <div class="text-center mb-5">
+        <span class="tag">Client Reviews</span>
+        <h2>What Our <span class="blue">Clients Say</span></h2>
+        <p class="sub">Trusted by hundreds of clients across Pakistan.</p>
+      </div>
+
+      <div class="row g-4 mb-5">
+        <% if (reviews.length === 0) { %>
+          <div class="col-12 text-center" style="color:#a8c4e0;">
+            No reviews yet. Be the first to share your experience!
+          </div>
+        <% } else { %>
+          <% reviews.forEach(review => { %>
+            <div class="col-md-4">
+              <div class="review-card">
+                <p>"<%= review.message %>"</p>
+                <div class="reviewer">
+                  <div class="avatar"><%= review.customerName.trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase() %></div>
+                  <div>
+                    <strong><%= review.customerName %></strong>
+                  </div>
+                </div>
+                <div class="stars">
+                  <% for (let i = 1; i <= 5; i++) { %><%= i <= review.rating ? '★' : '☆' %><% } %>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-lg-7">
+          <% if (currentUser && currentUser.id) { %>
+            <div class="review-form-card">
+              <h5 class="mb-3" style="color:#e8f4ff;">Share Your Experience</h5>
+              <form id="reviewForm">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label style="color:#a8c4e0;">Your Name</label>
+                    <input type="text" id="reviewCustomerName" class="form-control" value="<%= currentUser.name %>" required />
+                  </div>
+                  <div class="col-md-6">
+                    <label style="color:#a8c4e0;" class="d-block">Rating</label>
+                    <div class="star-rating">
+                      <input type="radio" id="rate5" name="rating" value="5" />
+                      <label for="rate5" title="5 stars"><i class="fas fa-star"></i></label>
+                      <input type="radio" id="rate4" name="rating" value="4" />
+                      <label for="rate4" title="4 stars"><i class="fas fa-star"></i></label>
+                      <input type="radio" id="rate3" name="rating" value="3" />
+                      <label for="rate3" title="3 stars"><i class="fas fa-star"></i></label>
+                      <input type="radio" id="rate2" name="rating" value="2" />
+                      <label for="rate2" title="2 stars"><i class="fas fa-star"></i></label>
+                      <input type="radio" id="rate1" name="rating" value="1" />
+                      <label for="rate1" title="1 star"><i class="fas fa-star"></i></label>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <label style="color:#a8c4e0;">Your Review</label>
+                    <textarea id="reviewMessage" class="form-control" rows="3" placeholder="Tell us about your experience..." required></textarea>
+                  </div>
+                  <div class="col-12">
+                    <button type="submit" id="reviewSubmitBtn" class="btn btn-main w-100">
+                      <i class="fas fa-paper-plane"></i> Submit Review
+                    </button>
+                  </div>
+                  <div class="col-12">
+                    <div id="reviewSuccessMsg" class="success-box" style="display:none;"></div>
+                    <div id="reviewErrorMsg" class="error-box" style="display:none;"></div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          <% } else { %>
+            <div class="review-form-card text-center">
+              <p class="mb-3" style="color:#a8c4e0;">Have you worked with us? <a href="/auth/login" style="color:#00b4ff;">Log in</a> to leave a review.</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================
+  <!-- ========================
+       ICBS Reference / Promotional Section
+       ======================== -->
+  <section id="icbs-reference" class="section fade-in icbs-ref-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <span class="tag">OUR REFERENCE</span>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+          <div class="icbs-card px-4 px-md-5 py-5 d-flex flex-column flex-md-row align-items-center text-center text-md-start gap-4 gap-md-5">
+            
+            <!-- Logo -->
+            <div class="icbs-logo-wrap flex-shrink-0">
+              <img
+                src="/images/icbs-logo.png"
+                alt="Inter-connect Business Solutions Logo"
+                class="icbs-logo"
+              />
+            </div>
+
+            <!-- Content -->
+            <div class="icbs-content flex-grow-1">
+              <h3 class="icbs-name mb-2 mb-md-3">Inter-connect Business Solutions (ICBS)</h3>
+              <p class="icbs-subtitle mb-3 text-danger fw-bold" style="font-size: 1.05rem; letter-spacing: 0.5px;">Smart Solutions. Stronger Connections.</p>
+              <p class="icbs-desc mb-4" style="font-size: 1.05rem; line-height: 1.6; color: #a8c4e0;">
+                ICBS provides IT, networking, security surveillance, CCTV installation, system support, and related technology solutions for businesses.
+              </p>
+              <p class="icbs-services-list mb-0 text-white fw-semibold" style="font-size: 0.95rem; line-height: 1.5;">
+                <span class="d-inline-block">Networking Solutions</span> &bull; 
+                <span class="d-inline-block">CCTV Installation &amp; Support</span> &bull; 
+                <span class="d-inline-block">System Support</span> &bull; 
+                <span class="d-inline-block">Video Intercom</span> &bull; 
+                <span class="d-inline-block">Electric Fence</span>
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section bg-alt fade-in">
+    <div class="container">
+      <div class="text-center mb-5">
+        <span class="tag">Get In Touch</span>
+        <h2>Get a <span class="blue">Free Quote</span></h2>
+        <p class="sub">Visit our office, call us, or send us a quote request and we'll get back to you within 24 hours.</p>
+      </div>
+
+      <!-- Top Row: Office Picture (Left Column ~40-45%) & Contact Information (Right Column) -->
+      <div class="row g-4 mb-5 align-items-center">
+        <!-- Left Column: Office Picture -->
+        <div class="col-lg-5">
+          <div class="office-img-wrap">
+            <img src="/images/office.jpg" alt="unieQ Solutions Office" class="img-fluid" />
+          </div>
+        </div>
+
+        <!-- Right Column: Contact Information -->
+        <div class="col-lg-7">
+          <div class="info-box ps-lg-3">
+            <div class="info-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <div>
+                <strong>Visit Us</strong>
+                <p>Office no 16/MZ-2 Al-Hafeez Shopping Mall, Gulberg3, Lahore</p>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <i class="fas fa-phone"></i>
+              <div>
+                <strong>Call Us</strong>
+                <p>+92-301-899-9603</p>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <i class="fas fa-envelope"></i>
+              <div>
+                <strong>Email Us</strong>
+                <p>theunieqsol@gmail.com / info@unieqsol.com</p>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <i class="fas fa-clock"></i>
+              <div>
+                <strong>Working Hours</strong>
+                <p>Mon – Sat: 9 AM – 6 PM</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Get a Free Quote Form (Centered) -->
+      <div class="row justify-content-center">
+        <div class="col-lg-9">
+          <form id="quoteForm" class="form-box">
+            <div class="text-center mb-4">
+              <h4 class="fw-bold" style="color: #e8f4ff;"><i class="fas fa-paper-plane text-danger me-2"></i>Get a Free Quote</h4>
+              <p style="color: #a8c4e0; font-size: 0.9rem; margin-bottom: 0;">Fill the form below and our team will get back to you within 24 hours.</p>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label>Full Name *</label>
+                <input type="text" id="name" class="form-control" placeholder="Ahmad Ali" minlength="3" maxlength="100" required />
+              </div>
+              <div class="col-md-6">
+                <label>Phone Number *</label>
+                <input type="tel" id="phone" class="form-control" placeholder="03XXXXXXXXX" pattern="(\+92|0)3[0-9]{9}" title="Please enter a valid Pakistani mobile number." required />
+                <small class="text-muted">Format: 03XXXXXXXXX or +923XXXXXXXXX</small>
+              </div>
+              <div class="col-md-6">
+                <label>Email Address *</label>
+                <input type="email" id="email" class="form-control" placeholder="you@example.com" required />
+              </div>
+              <div class="col-md-6">
+                <label>Service Type *</label>
+                <select id="service" class="form-control" required>
+                  <option value="">-- Select Service --</option>
+                  <% services.forEach(svc => { %>
+                    <option><%= svc.name %></option>
+                  <% }) %>
+                  <option>Product Purchase</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label>Message *</label>
+                <textarea id="message" class="form-control" rows="4" placeholder="Describe your requirements (at least 20 characters)..." minlength="20" maxlength="1000" required></textarea>
+              </div>
+              <div class="col-12">
+                <button type="submit" id="submitBtn" class="btn btn-main w-100">
+                  <i class="fas fa-paper-plane"></i> Send Quote Request
+                </button>
+              </div>
+              <div class="col-12">
+                <div id="successMsg" class="success-box" style="display:none;"></div>
+                <div id="errorMsg" class="error-box" style="display:none;"></div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- jQuery Submission Script for Quote Form -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Guards against a double-click firing two overlapping submissions
+      // in the brief moment before the button's disabled state visually
+      // takes effect — the disabled button already prevents most repeats,
+      // this flag makes it explicit and unconditional.
+      let quoteSubmitting = false;
+
+      $('#quoteForm').on('submit', function(e) {
+        e.preventDefault();
+        if (quoteSubmitting) return;
+
+        const form = this;
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        quoteSubmitting = true;
+        const $submitBtn = $('#submitBtn');
+        const originalBtnHtml = $submitBtn.html();
+        $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Sending...');
+
+        $('#successMsg').hide();
+        $('#errorMsg').hide();
+
+        const formData = {
+          name: $('#name').val(),
+          phone: $('#phone').val(),
+          email: $('#email').val(),
+          service: $('#service').val(),
+          message: $('#message').val()
+        };
+
+        $.ajax({
+          url: '/quote',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(formData),
+          success: function(response) {
+            quoteSubmitting = false;
+            $submitBtn.prop('disabled', false).html(originalBtnHtml);
+            const msg = (response && response.message) ? response.message : 'Request sent! We\'ll contact you within 24 hours.';
+            $('#successMsg').html(`<i class="fas fa-check-circle me-2"></i>${msg}`).fadeIn();
+            $('#quoteForm')[0].reset();
+          },
+          error: function(xhr) {
+            quoteSubmitting = false;
+            $submitBtn.prop('disabled', false).html(originalBtnHtml);
+            const responseJson = xhr.responseJSON;
+            const errMsg = responseJson && responseJson.message ? responseJson.message : 'Something went wrong. Please try again.';
+            $('#errorMsg').html(`<i class="fas fa-exclamation-triangle me-2"></i>${errMsg}`).fadeIn();
+          }
+        });
+      });
+
+      $('#reviewForm').on('submit', function(e) {
+        e.preventDefault();
+
+        const $submitBtn = $('#reviewSubmitBtn');
+        const originalBtnHtml = $submitBtn.html();
+        $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Submitting...');
+
+        $('#reviewSuccessMsg').hide();
+        $('#reviewErrorMsg').hide();
+
+        const formData = {
+          customerName: $('#reviewCustomerName').val(),
+          rating: $('input[name="rating"]:checked').val(),
+          message: $('#reviewMessage').val()
+        };
+
+        $.ajax({
+          url: '/reviews',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(formData),
+          success: function(response) {
+            $submitBtn.prop('disabled', false).html(originalBtnHtml);
+            $('#reviewSuccessMsg').html(`<i class="fas fa-check-circle"></i> ${response.message}`).fadeIn();
+            $('#reviewForm')[0].reset();
+          },
+          error: function(xhr) {
+            $submitBtn.prop('disabled', false).html(originalBtnHtml);
+            const responseJson = xhr.responseJSON;
+            const errMsg = responseJson && responseJson.message ? responseJson.message : 'Something went wrong. Please try again.';
+            $('#reviewErrorMsg').html(`<i class="fas fa-exclamation-triangle"></i> ${errMsg}`).fadeIn();
+          }
+        });
+      });
+    });
+  </script>

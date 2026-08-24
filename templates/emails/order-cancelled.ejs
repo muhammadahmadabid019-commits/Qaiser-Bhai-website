@@ -1,0 +1,32 @@
+<h2 style="margin:0 0 16px; font-size:20px; color:#0a1628;">Order Cancelled</h2>
+<p style="margin:0 0 16px; font-size:14px; color:#4a5568; line-height:1.6;">
+  Hi <%= order.customerName %>, order #<%= orderNumber %> has been cancelled.
+</p>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px; font-size:14px; color:#4a5568;">
+  <tr>
+    <td style="padding:4px 0;"><strong>Order Number:</strong></td>
+    <td style="padding:4px 0; text-align:right;">#<%= orderNumber %></td>
+  </tr>
+  <tr>
+    <td style="padding:4px 0;"><strong>Order Status:</strong></td>
+    <td style="padding:4px 0; text-align:right; color:#c0392b; font-weight:600;">Cancelled</td>
+  </tr>
+  <% if (order.paymentStatus === 'Paid') { %>
+  <tr>
+    <td style="padding:4px 0;" colspan="2">Since this order was already paid, our team will contact you shortly about your refund.</td>
+  </tr>
+  <% } %>
+</table>
+
+<p style="margin:0 0 24px; font-size:14px; color:#4a5568; line-height:1.6;">
+  If you believe this was a mistake or have any questions, please reach out to our support team below.
+</p>
+
+<table role="presentation" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="border-radius:8px; background-color:#00b4ff;">
+      <a href="<%= appUrl %>/products" style="display:inline-block; padding:12px 24px; font-size:14px; font-weight:600; color:#051221; text-decoration:none;">Continue Shopping</a>
+    </td>
+  </tr>
+</table>

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(disown)",
+      "Bash(curl -s http://localhost:3000/products -o /tmp/products5.html -w \"http_code=%{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:3000/products/ds-7616nxi-k1 -o /tmp/detail.html -w \"http_code=%{http_code}\\\\n\")"
+    ]
+  }
+}

@@ -1,0 +1,479 @@
+<section class="section fade-in bg-alt page-section-padded">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="tag">Review Your Items</span>
+      <h2>Shopping <span class="blue">Cart</span></h2>
+      <p class="sub">Proceed to checkout when you're ready.</p>
+    </div>
+
+    <div class="row g-4">
+      <!-- Cart Items -->
+      <div class="col-lg-8 <%= cartItems.length === 0 ? 'mx-auto' : '' %>">
+
+        <% if (cartItems.length===0) { %>
+          <div class="cart-empty-state text-center">
+            <i class="fas fa-shopping-cart mb-3" style="font-size: 4rem; opacity: 0.35; color: #ff5252;"></i>
+            <h4 class="fw-bold" style="color: #e8f4ff;">Your cart is empty</h4>
+            <p class="mb-4" style="color: #a8c4e0;">Looks like you haven't added anything yet.</p>
+            <a href="/products" class="btn btn-main py-2 px-4" style="border-radius: 8px;">Start Shopping</a>
+          </div>
+          <% } else { %>
+
+            <% cartItems.forEach(item=> { %>
+              <div class="cart-item-card mb-3">
+                <div class="row align-items-center g-3">
+
+                  <!-- Product Image (clickable -> product page) -->
+                  <div class="col-4 col-md-2 text-center">
+                    <a href="/products/<%= item.product.slug %>" class="cart-item-link">
+                      <div class="cart-item-img-wrap">
+                        <img src="<%= item.product.image %>" alt="<%= item.product.name %>" class="img-fluid"
+                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="cart-item-img-fallback" style="display:none;">
+                          <i class="fas fa-image"></i>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+
+                  <!-- Product Details (name clickable -> product page) -->
+                  <div class="col-8 col-md-3">
+                    <a href="/products/<%= item.product.slug %>" class="cart-item-link">
+                      <h6 class="fw-bold mb-1 cart-item-name">
+                        <%= item.product.name %>
+                      </h6>
+                    </a>
+                    <span class="badge-category">
+                      <%= item.product.category ? item.product.category.name : 'Uncategorized' %>
+                    </span>
+                  </div>
+
+                  <!-- Quantity Stepper (-, input, +) -->
+                  <div class="col-6 col-md-3">
+                    <form action="/cart/update/<%= item.product._id %>" method="POST" class="quantity-stepper">
+                      <button type="button" class="qty-btn" onclick="stepQty(this, -1)"
+                        aria-label="Decrease quantity">&minus;</button>
+                      <input type="number" name="quantity" class="qty-input" value="<%= item.quantity %>" min="1"
+                        max="<%= item.product.stock %>" onchange="this.form.submit()">
+                      <button type="button" class="qty-btn" onclick="stepQty(this, 1)"
+                        aria-label="Increase quantity">&plus;</button>
+                    </form>
+                    <span class="qty-stock-msg" style="display:none;"></span>
+                  </div>
+
+                  <!-- Unit Price x Qty = Line Subtotal -->
+                  <div class="col-4 col-md-3 text-end">
+                    <div class="fw-bold" style="color: #ff5252; font-size: 1.05rem;">
+                      Rs <%= (item.product.price * item.quantity).toLocaleString() %>
+                    </div>
+                    <small class="text-muted" style="font-size: 0.75rem;">
+                      Rs <%= item.product.price.toLocaleString() %> each
+                    </small>
+                  </div>
+
+                  <!-- Remove Button -->
+                  <div class="col-2 col-md-1 text-end">
+                    <form action="/cart/remove/<%= item.product._id %>" method="POST" class="m-0 p-0" style="display:inline;">
+                      <button type="submit" class="remove-btn" title="Remove item" aria-label="Remove item">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </form>
+                  </div>
+
+                </div>
+              </div>
+              <% }) %>
+
+                <!-- Cart Actions Footer (Continue Shopping) -->
+                <div class="mt-3 pt-2">
+                  <a href="/products" class="text-decoration-none fw-semibold" style="color: #ff5252;"><i
+                      class="fas fa-arrow-left me-1"></i> Continue Shopping</a>
+                </div>
+
+                <% } %>
+      </div>
+
+      <!-- Order Summary Card -->
+      <% if (cartItems.length > 0) { %>
+      <div class="col-lg-4">
+        <div class="order-summary-card shadow-sm sticky-top" style="top: 90px; z-index: 10;">
+          <div class="order-summary-header">
+            <h5 class="m-0 fw-bold"><i class="fas fa-receipt me-2"></i>Order Summary</h5>
+          </div>
+          <div class="p-4">
+            <div class="d-flex justify-content-between mb-3" style="color: #a8c4e0;">
+              <span>Subtotal (<%= cartItems.reduce((acc, i)=> acc + i.quantity, 0) %> items)</span>
+              <strong style="color: #e8f4ff;">Rs <%= subtotal.toLocaleString() %></strong>
+            </div>
+            <div class="d-flex justify-content-between mb-3" style="color: #a8c4e0;">
+              <span>Shipping Fee</span>
+              <strong style="color: #e8f4ff;">Rs <%= (typeof shipping !== 'undefined' ? shipping : 0).toLocaleString() %></strong>
+            </div>
+            <% if (typeof tax !== 'undefined' && tax > 0) { %>
+              <div class="d-flex justify-content-between mb-3" style="color: #a8c4e0;">
+                <span>Tax</span>
+                <strong style="color: #e8f4ff;">Rs <%= tax.toLocaleString() %></strong>
+              </div>
+            <% } %>
+            <div class="order-summary-divider my-3"></div>
+            <div class="d-flex justify-content-between mb-4 align-items-center">
+              <span class="fw-bold" style="color: #e8f4ff; font-size: 1.1rem;">Total</span>
+              <span class="fw-bold fs-4" style="color: #ff5252;">
+                Rs <%= total.toLocaleString() %>
+              </span>
+            </div>
+
+            <% if (whatsappBookingEnabled) { %>
+              <button type="button" class="btn btn-main w-100 py-3 fw-bold" data-bs-toggle="modal" data-bs-target="#whatsappOrderModal" style="border-radius: 10px; font-size: 1rem; background-color: #25D366; border-color: #25D366;">
+                <i class="fab fa-whatsapp me-2"></i> Order via WhatsApp
+              </button>
+            <% } else { %>
+              <a href="/checkout" class="btn btn-main w-100 py-3 fw-bold" style="border-radius: 10px; font-size: 1rem;">
+                Proceed to Checkout <i class="fas fa-arrow-right ms-2"></i>
+              </a>
+            <% } %>
+
+            <div class="text-center mt-3" style="font-size: 0.78rem; color: #7a92b0;">
+              <i class="fas fa-shield-alt me-1" style="color: #ff5252;"></i> Safe & Secure Checkout
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+
+    </div>
+  </div>
+</section>
+
+<% if (whatsappBookingEnabled) { %>
+<!-- WhatsApp Order Modal -->
+<div class="modal fade" id="whatsappOrderModal" tabindex="-1" aria-labelledby="whatsappOrderModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background: linear-gradient(145deg, #0D2A52, #102F5A); border: 1px solid rgba(229, 46, 46, 0.22); color: #e8f4ff;">
+      <div class="modal-header" style="border-bottom: 1px solid rgba(229, 46, 46, 0.2);">
+        <h5 class="modal-title fw-bold" id="whatsappOrderModalLabel">Complete Your Order</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="whatsappOrderForm">
+        <div class="modal-body">
+          <p class="text-muted mb-4" style="color: #a8c4e0 !important; font-size: 0.9rem;">
+            Please provide your details below. This information will be used to prepare your WhatsApp order message.
+          </p>
+
+          <div class="mb-3">
+            <label for="waName" class="form-label fw-bold" style="color: #a8c4e0;">Full Name *</label>
+            <input type="text" class="form-control" id="waName" style="background: rgba(6, 27, 58, 0.6); color: #e8f4ff; border: 1px solid rgba(229, 46, 46, 0.2);" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="waPhone" class="form-label fw-bold" style="color: #a8c4e0;">Phone Number *</label>
+            <input type="tel" class="form-control" id="waPhone" style="background: rgba(6, 27, 58, 0.6); color: #e8f4ff; border: 1px solid rgba(229, 46, 46, 0.2);" pattern="^(\+92|0)[0-9]{10}$" title="Enter a valid Pakistani phone number (e.g. 03001234567)" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="waEmail" class="form-label fw-bold" style="color: #a8c4e0;">Email Address <span class="fw-normal text-muted">(Optional)</span></label>
+            <input type="email" class="form-control" id="waEmail" style="background: rgba(6, 27, 58, 0.6); color: #e8f4ff; border: 1px solid rgba(229, 46, 46, 0.2);">
+          </div>
+
+          <div class="mb-3">
+            <label for="waAddress" class="form-label fw-bold" style="color: #a8c4e0;">Delivery Address *</label>
+            <textarea class="form-control" id="waAddress" rows="2" style="background: rgba(6, 27, 58, 0.6); color: #e8f4ff; border: 1px solid rgba(229, 46, 46, 0.2);" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer" style="border-top: 1px solid rgba(229, 46, 46, 0.2);">
+          <button type="button" class="btn btn-outline" data-bs-dismiss="modal" style="color: #a8c4e0; border-color: #a8c4e0;">Cancel</button>
+          <button type="submit" class="btn btn-main" style="background-color: #25D366; border-color: #25D366;">
+            Continue to WhatsApp <i class="fas fa-arrow-right ms-1"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const waForm = document.getElementById('whatsappOrderForm');
+    if (waForm) {
+      waForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const name = document.getElementById('waName').value.trim();
+        const phone = document.getElementById('waPhone').value.trim();
+        const email = document.getElementById('waEmail').value.trim();
+        const address = document.getElementById('waAddress').value.trim();
+
+        let message = "Hello, I would like to place an order for the following products.\n\n";
+        
+        message += "*Customer Information:*\n";
+        message += `Name: ${name}\n`;
+        message += `Phone: ${phone}\n`;
+        if (email) {
+          message += `Email: ${email}\n`;
+        }
+        message += `Delivery Address: ${address}\n\n`;
+
+        message += "*Order Details:*\n";
+        <% cartItems.forEach(item => { %>
+          message += `<%= item.product.name %> × <%= item.quantity %>\n`;
+          message += `Unit Price: Rs. <%= item.product.price.toLocaleString() %>\n`;
+          message += `Line Total: Rs. <%= (item.product.price * item.quantity).toLocaleString() %>\n\n`;
+        <% }) %>
+
+        message += `Subtotal: Rs. <%= subtotal.toLocaleString() %>\n`;
+        message += `Shipping: Rs. <%= (typeof shipping !== 'undefined' ? shipping : 0).toLocaleString() %>\n`;
+        <% if (typeof tax !== 'undefined' && tax > 0) { %>
+          message += `Tax: Rs. <%= tax.toLocaleString() %>\n`;
+        <% } %>
+        message += `*Grand Total: Rs. <%= total.toLocaleString() %>*\n\n`;
+
+        message += "Please confirm the product availability, final total, and order details.\nThank you.";
+
+        const whatsappNumber = "<%= whatsappNumber %>";
+        const encodedMessage = encodeURIComponent(message);
+        const url = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+        window.open(url, '_blank');
+        
+        // Hide modal
+        const modalEl = document.getElementById('whatsappOrderModal');
+        // Check if bootstrap is globally available, else just rely on close button manually clicked if needed.
+        if (window.bootstrap && bootstrap.Modal) {
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) modal.hide();
+        }
+      });
+    }
+  });
+</script>
+<% } %>
+
+<style>
+  .cart-empty-state {
+    background: linear-gradient(145deg, #0D2A52, #102F5A);
+    border: 1px solid rgba(229, 46, 46, 0.2);
+    border-radius: 16px;
+    padding: 60px 24px;
+  }
+
+  .cart-item-card {
+    background: linear-gradient(145deg, #0D2A52, #102F5A);
+    border: 1px solid rgba(229, 46, 46, 0.2);
+    border-radius: 14px;
+    padding: 18px 20px;
+    transition: all 0.3s ease;
+  }
+
+  .cart-item-card:hover {
+    border-color: #e52e2e;
+    box-shadow: 0 12px 30px rgba(229, 46, 46, 0.18);
+    transform: translateY(-2px);
+  }
+
+  .cart-item-link {
+    text-decoration: none;
+    display: block;
+  }
+
+  .cart-item-img-wrap {
+    background: rgba(6, 27, 58, 0.6);
+    border: 1px solid rgba(229, 46, 46, 0.2);
+    border-radius: 10px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+  }
+
+  .cart-item-link:hover .cart-item-img-wrap {
+    border-color: #e52e2e;
+  }
+
+  .cart-item-img-wrap img {
+    max-height: 64px;
+    max-width: 100%;
+    object-fit: contain;
+    transition: transform 0.25s ease;
+  }
+
+  .cart-item-link:hover .cart-item-img-wrap img {
+    transform: scale(1.08);
+  }
+
+  .cart-item-img-fallback {
+    align-items: center;
+    justify-content: center;
+    color: rgba(229, 46, 46, 0.4);
+    font-size: 1.8rem;
+    width: 100%;
+    height: 100%;
+  }
+
+  .cart-item-name {
+    color: #e8f4ff;
+    transition: color 0.2s ease;
+  }
+
+  .cart-item-link:hover .cart-item-name {
+    color: #ff5252;
+  }
+
+  .badge-category {
+    display: inline-block;
+    background: rgba(229, 46, 46, 0.12);
+    color: #ff5252;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(229, 46, 46, 0.25);
+  }
+
+  .quantity-stepper {
+    display: inline-flex;
+    align-items: stretch;
+    border: 1px solid rgba(229, 46, 46, 0.25);
+    border-radius: 8px;
+    overflow: hidden;
+    width: fit-content;
+    background: rgba(6, 27, 58, 0.6);
+    box-sizing: border-box;
+  }
+
+  .quantity-stepper * {
+    box-sizing: border-box;
+  }
+
+  .qty-btn {
+    background: rgba(229, 46, 46, 0.12);
+    border: none;
+    margin: 0;
+    padding: 0;
+    outline: none;
+    color: #ff5252;
+    width: 34px;
+    flex: 0 0 34px;
+    font-size: 1rem;
+    line-height: 1;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .qty-btn:hover {
+    background: #e52e2e;
+    color: #ffffff;
+  }
+
+  .qty-btn:focus-visible {
+    outline: 2px solid #e52e2e;
+    outline-offset: -2px;
+  }
+
+  .qty-stock-msg {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .qty-input {
+    background: transparent;
+    border: none;
+    border-left: 1px solid rgba(229, 46, 46, 0.2);
+    border-right: 1px solid rgba(229, 46, 46, 0.2);
+    outline: none;
+    width: 46px;
+    flex: 0 0 46px;
+    text-align: center;
+    padding: 8px 2px;
+    font-weight: 600;
+    color: #e8f4ff;
+    -moz-appearance: textfield;
+  }
+
+  .qty-input::-webkit-outer-spin-button,
+  .qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .remove-btn {
+    background: rgba(229, 62, 62, 0.1);
+    border: 1px solid rgba(229, 62, 62, 0.2);
+    color: #ff6b6b;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .remove-btn:hover {
+    background: #e53e3e;
+    color: #fff;
+  }
+
+  .order-summary-card {
+    background: linear-gradient(145deg, #0D2A52, #102F5A);
+    border: 1px solid rgba(229, 46, 46, 0.22);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .order-summary-header {
+    background: #061B3A;
+    border-bottom: 2px solid #e52e2e;
+    color: #ffffff;
+    padding: 18px 24px;
+  }
+
+  .order-summary-divider {
+    border-bottom: 1px solid rgba(229, 46, 46, 0.2);
+  }
+
+  @media (max-width: 767px) {
+    .cart-item-card .row {
+      row-gap: 10px;
+    }
+  }
+</style>
+
+<script>
+  function stepQty(btn, delta) {
+    const form = btn.closest('form');
+    const wrapper = form.parentElement;
+    const msg = wrapper.querySelector('.qty-stock-msg');
+    const input = form.querySelector('.qty-input');
+    const min = parseInt(input.min) || 1;
+    const max = parseInt(input.max) || Infinity;
+    let val = (parseInt(input.value) || min) + delta;
+
+    if (val > max) {
+      msg.textContent = `Only ${max} in stock`;
+      msg.style.display = 'block';
+      msg.style.color = '#ff6b6b';
+      clearTimeout(msg._hideTimer);
+      msg._hideTimer = setTimeout(() => { msg.style.display = 'none'; }, 2200);
+      return;
+    }
+    if (val < min) {
+      return; // remove button handles going to zero
+    }
+
+    val = Math.min(max, Math.max(min, val));
+    if (val === parseInt(input.value)) return; // no change, don't submit
+    input.value = val;
+    form.submit();
+  }
+</script>

@@ -1,0 +1,74 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 style="font-weight: 700; color: #0a1628;">Manage Reviews</h2>
+</div>
+
+<div class="mb-3">
+  <a href="/admin/reviews" class="btn btn-sm <%= activeFilter === 'All' ? 'btn-primary' : 'btn-outline-secondary' %> me-2">
+    All (<%= statusCounts.Pending + statusCounts.Approved + statusCounts.Rejected %>)
+  </a>
+  <a href="/admin/reviews?status=Pending" class="btn btn-sm <%= activeFilter === 'Pending' ? 'btn-primary' : 'btn-outline-secondary' %> me-2">
+    Pending (<%= statusCounts.Pending %>)
+  </a>
+  <a href="/admin/reviews?status=Approved" class="btn btn-sm <%= activeFilter === 'Approved' ? 'btn-primary' : 'btn-outline-secondary' %> me-2">
+    Approved (<%= statusCounts.Approved %>)
+  </a>
+  <a href="/admin/reviews?status=Rejected" class="btn btn-sm <%= activeFilter === 'Rejected' ? 'btn-primary' : 'btn-outline-secondary' %>">
+    Rejected (<%= statusCounts.Rejected %>)
+  </a>
+</div>
+
+<div class="card-box">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Customer</th>
+          <th scope="col">Rating</th>
+          <th scope="col">Review</th>
+          <th scope="col">Date</th>
+          <th scope="col">Status</th>
+          <th scope="col" class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (reviews.length === 0) { %>
+          <tr>
+            <td colspan="6" class="text-center py-4">No reviews found.</td>
+          </tr>
+        <% } else { %>
+          <% reviews.forEach(review => { %>
+            <tr>
+              <td class="fw-semibold"><%= review.customerName %></td>
+              <td style="color:#ffc107; white-space:nowrap;">
+                <% for (let i = 1; i <= 5; i++) { %><%= i <= review.rating ? '★' : '☆' %><% } %>
+              </td>
+              <td style="max-width: 320px; white-space: normal;"><%= review.message %></td>
+              <td><%= review.createdAt.toLocaleDateString('en-PK') %></td>
+              <td>
+                <% if (review.status === 'Approved') { %>
+                  <span class="badge bg-success">Approved</span>
+                <% } else if (review.status === 'Rejected') { %>
+                  <span class="badge bg-danger">Rejected</span>
+                <% } else { %>
+                  <span class="badge bg-warning text-dark">Pending</span>
+                <% } %>
+              </td>
+              <td class="text-end">
+                <form action="/admin/reviews/<%= review._id %>/status" method="POST" class="d-flex gap-1 justify-content-end align-items-center">
+                  <select name="status" class="form-select form-select-sm" style="width:auto;">
+                    <% statuses.forEach(s => { %>
+                      <option value="<%= s %>" <%= review.status === s ? 'selected' : '' %>><%= s %></option>
+                    <% }) %>
+                  </select>
+                  <button type="submit" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-save"></i> Update
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>

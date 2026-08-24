@@ -1,0 +1,951 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<section class="section fade-in bg-alt checkout-page page-section-padded">
+  <div class="container">
+
+    <!-- Header / Breadcrumb -->
+    <div class="checkout-header mb-4">
+      <a href="/cart" class="back-link"><i class="fas fa-arrow-left me-2"></i>Back to Cart</a>
+      <div class="d-flex flex-wrap justify-content-between align-items-end mt-2">
+        <h2 class="m-0">Checkout</h2>
+        <span class="secure-pill"><i class="fas fa-lock me-1"></i> Secure Checkout</span>
+      </div>
+
+      <div class="checkout-steps mt-4">
+        <div class="step done"><span class="step-circle"><i class="fas fa-check"></i></span> Cart</div>
+        <div class="step-line"></div>
+        <div class="step active"><span class="step-circle">2</span> Checkout</div>
+        <div class="step-line"></div>
+        <div class="step"><span class="step-circle">3</span> Confirmation</div>
+      </div>
+    </div>
+
+    <form action="/checkout/place-order" method="POST" id="checkoutForm" novalidate>
+      <div class="row g-4">
+
+        <!-- LEFT: Forms -->
+        <div class="col-lg-8">
+
+          <!-- Contact Information -->
+          <div class="checkout-card mb-4">
+            <div class="checkout-card-head">
+              <span class="chk-icon-badge"><i class="bi bi-person-vcard-fill"></i></span>
+              <h5 class="checkout-card-title">Contact Information</h5>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">First Name <span class="req">*</span></label>
+                <input type="text" name="firstName" class="form-control chk-input" required
+                  value="<%= currentUser ? currentUser.name.split(' ')[0] : '' %>">
+                <div class="invalid-feedback">Please enter your first name.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Last Name <span class="req">*</span></label>
+                <input type="text" name="lastName" class="form-control chk-input" required
+                  value="<%= currentUser && currentUser.name.split(' ').length > 1 ? currentUser.name.split(' ').slice(1).join(' ') : '' %>">
+                <div class="invalid-feedback">Please enter your last name.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Email Address <span class="req">*</span></label>
+                <div class="input-group chk-input-group">
+                  <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                  <input type="email" name="email" class="form-control chk-input" required
+                    value="<%= currentUser ? currentUser.email : '' %>">
+                </div>
+                <div class="invalid-feedback">Please enter a valid email address.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Phone Number <span class="req">*</span></label>
+                <div class="input-group chk-input-group">
+                  <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                  <input type="tel" name="phone" class="form-control chk-input" placeholder="03XX XXXXXXX"
+                    pattern="03[0-9]{9}" maxlength="11" required>
+                </div>
+                <small class="text-muted">Format: 03XXXXXXXXX</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shipping Address -->
+          <div class="checkout-card mb-4">
+            <div class="checkout-card-head">
+              <span class="chk-icon-badge"><i class="bi bi-geo-alt-fill"></i></span>
+              <h5 class="checkout-card-title">Shipping Address</h5>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Country</label>
+                <input type="text" class="form-control chk-input" value="Pakistan" disabled>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Province <span class="req">*</span></label>
+                <select name="province" class="form-select chk-input" required>
+                  <option value="">Select Province</option>
+                  <% provinces.forEach(p=> { %>
+                    <option value="<%= p %>">
+                      <%= p %>
+                    </option>
+                    <% }) %>
+                </select>
+                <div class="invalid-feedback">Please select a province.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">City <span class="req">*</span></label>
+                <select name="city" class="form-select chk-input" required>
+                  <option value="">Select City</option>
+                  <% cities.forEach(c=> { %>
+                    <option value="<%= c %>">
+                      <%= c %>
+                    </option>
+                    <% }) %>
+                </select>
+                <div class="invalid-feedback">Please select a city.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Postal Code <span class="text-muted small">(Optional)</span></label>
+                <input type="text" name="postalCode" class="form-control chk-input">
+              </div>
+              <div class="col-md-8">
+                <label class="form-label">Address Line 1 <span class="req">*</span></label>
+                <input type="text" name="street" class="form-control chk-input" placeholder="Street address" required>
+                <div class="invalid-feedback">Please enter your street address.</div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">House / Flat No. <span class="text-muted small">(Optional)</span></label>
+                <input type="text" name="houseNo" class="form-control chk-input">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Address Line 2 <span class="text-muted small">(Optional)</span></label>
+                <input type="text" name="area" class="form-control chk-input"
+                  placeholder="Apartment, suite, area, landmark, etc.">
+              </div>
+              <div class="col-12">
+                <div class="form-check chk-checkbox mt-1">
+                  <input type="checkbox" class="form-check-input" id="saveAddress">
+                  <label class="form-check-label text-muted small" for="saveAddress">Save this address for future
+                    orders</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Delivery Method -->
+          <div class="checkout-card mb-4">
+            <div class="checkout-card-head">
+              <span class="chk-icon-badge"><i class="bi bi-truck"></i></span>
+              <h5 class="checkout-card-title">Delivery Method</h5>
+            </div>
+
+
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="delivery-option">
+                      <input type="radio" name="deliveryMethod" value="Standard" checked onchange="updateSummary()">
+                      <div class="delivery-option-body">
+                        <div class="delivery-option-icon"><i class="fas fa-truck"></i></div>
+                        <div class="delivery-option-text">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <strong>Standard Delivery</strong>
+                            <span class="delivery-price">
+                              <%= formatPrice(standardFee) %>
+                            </span>
+                          </div>
+                          <small class="text-muted">3&ndash;5 Business Days</small>
+                        </div>
+                        <span class="delivery-option-check"><i class="fas fa-check"></i></span>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="delivery-option">
+                      <input type="radio" name="deliveryMethod" value="Express" onchange="updateSummary()">
+                      <div class="delivery-option-body">
+                        <div class="delivery-option-icon"><i class="fas fa-bolt"></i></div>
+                        <div class="delivery-option-text">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <strong>Express Delivery</strong>
+                            <span class="delivery-price">
+                              <%= formatPrice(expressFee) %>
+                            </span>
+                          </div>
+                          <small class="text-muted">1&ndash;2 Business Days</small>
+                        </div>
+                        <span class="delivery-option-check"><i class="fas fa-check"></i></span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+                <div class="mt-3 text-muted small" id="estimatedDelivery"></div>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="checkout-card mb-4">
+            <div class="checkout-card-head">
+              <span class="chk-icon-badge"><i class="bi bi-credit-card-2-front-fill"></i></span>
+              <h5 class="checkout-card-title">Payment Method</h5>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-6">
+                <label class="payment-option">
+                  <input type="radio" name="paymentMethod" value="Cash on Delivery" checked
+                    onchange="togglePaymentFields()">
+                  <div class="payment-option-body">
+                    <span class="payment-option-check"><i class="fas fa-check"></i></span>
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Cash on Delivery</span>
+                  </div>
+                </label>
+              </div>
+              <div class="col-6">
+                <label class="payment-option<%= bankTransfer.enabled ? '' : ' disabled' %>">
+                  <input type="radio" name="paymentMethod" value="Bank Transfer" onchange="togglePaymentFields()"
+                    <%=bankTransfer.enabled ? '' : 'disabled' %>>
+                  <div class="payment-option-body">
+                    <span class="payment-option-check"><i class="fas fa-check"></i></span>
+                    <i class="fas fa-university"></i>
+                    <span>Bank Transfer<% if (!bankTransfer.enabled) { %> <small
+                          class="text-muted">(Unavailable)</small>
+                        <% } %></span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Bank Transfer details (live from admin-configured Payment Settings) -->
+            <div id="bankFields" class="payment-subfields" style="display:none;">
+              <div class="bank-transfer-card">
+                <div class="row g-3 mb-3">
+                  <div class="col-sm-6">
+                    <span class="d-block small text-muted">Bank Name</span>
+                    <strong>
+                      <%= bankTransfer.config.bankName %>
+                    </strong>
+                  </div>
+                  <div class="col-sm-6">
+                    <span class="d-block small text-muted">Account Title</span>
+                    <strong>
+                      <%= bankTransfer.config.accountTitle %>
+                    </strong>
+                  </div>
+                  <div class="col-sm-6">
+                    <span class="d-block small text-muted">Account Number</span>
+                    <strong>
+                      <%= bankTransfer.config.accountNumber %>
+                    </strong>
+                  </div>
+                  <div class="col-sm-6">
+                    <span class="d-block small text-muted">IBAN</span>
+                    <strong>
+                      <%= bankTransfer.config.iban %>
+                    </strong>
+                  </div>
+                  <% if (bankTransfer.config.branch) { %>
+                    <div class="col-sm-6">
+                      <span class="d-block small text-muted">Bank Branch</span>
+                      <strong>
+                        <%= bankTransfer.config.branch %>
+                      </strong>
+                    </div>
+                    <% } %>
+                </div>
+                <div class="alert alert-warning py-2 px-3 mb-3 small">
+                  <i class="fas fa-exclamation-triangle me-1"></i>
+                  <strong>Important:</strong> Please transfer the exact order amount.
+                </div>
+                <small class="text-muted"><i class="fas fa-info-circle me-1"></i>
+                  <%= bankTransfer.instructions %>
+                </small>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: Order Summary -->
+        <div class="col-lg-4">
+          <div class="order-summary-card sticky-top" style="top: 100px;">
+            <div class="order-summary-header">
+              <span class="chk-icon-badge chk-icon-badge-light"><i class="bi bi-receipt-cutoff"></i></span>
+              <h5 class="fw-bold m-0">Order Summary</h5>
+            </div>
+            <div class="p-4">
+
+              <div class="checkout-items mb-3">
+                <% cartItems.forEach(item=> { %>
+                  <div class="checkout-item">
+                    <div class="checkout-item-img">
+                      <img src="<%= item.product.image %>" alt="<%= item.product.name %>"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                      <div class="checkout-item-img-fallback" style="display:none;"><i class="fas fa-image"></i></div>
+                      <span class="checkout-item-qty-badge">
+                        <%= item.quantity %>
+                      </span>
+                    </div>
+                    <div class="checkout-item-info">
+                      <div class="checkout-item-name">
+                        <%= item.product.name %>
+                      </div>
+                      <div class="checkout-item-meta">Qty: <%= item.quantity %> &times; <%=
+                            formatPrice(item.product.price) %>
+                      </div>
+                    </div>
+                    <div class="checkout-item-price">
+                      <%= formatPrice(item.product.price * item.quantity) %>
+                    </div>
+                  </div>
+                  <% }) %>
+              </div>
+
+              <div class="d-flex justify-content-between mb-2 summary-row">
+                <span>Subtotal</span>
+                <span id="summarySubtotal" class="fw-semibold">
+                  <%= formatPrice(subtotal) %>
+                </span>
+              </div>
+              <div class="d-flex justify-content-between mb-2 summary-row">
+                <span>Shipping</span>
+                <span id="summaryShipping" class="fw-semibold">
+                  <%= deliveryFee===0 ? 'FREE' : formatPrice(deliveryFee) %>
+                </span>
+              </div>
+              <div class="d-flex justify-content-between mb-3 pb-3 order-summary-divider summary-row">
+                <span>Tax (5%)</span>
+                <span id="summaryTax" class="fw-semibold">
+                  <%= formatPrice(tax) %>
+                </span>
+              </div>
+
+              <div class="d-flex justify-content-between mb-4 align-items-center">
+                <span class="fw-bold fs-5">Grand Total</span>
+                <span id="summaryTotal" class="fw-bold fs-4 total-amount">
+                  <%= formatPrice(total) %>
+                </span>
+              </div>
+
+              <button type="submit" id="placeOrderBtn" class="btn btn-main w-100 py-3 fw-bold" disabled>
+                <span id="placeOrderText">Place Order <i class="fas fa-arrow-right ms-2"></i></span>
+                <span id="placeOrderSpinner" style="display:none;"><i class="fas fa-spinner fa-spin me-2"></i>Placing
+                  Order...</span>
+              </button>
+
+              <div class="mt-4 text-center trust-note">
+                <i class="fas fa-lock me-1"></i> Secure Checkout &mdash; your information is protected.
+              </div>
+
+              <div class="trust-badges mt-3">
+                <span><i class="fas fa-undo"></i> Easy Returns</span>
+                <span><i class="fas fa-shield-alt"></i> Verified Seller</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </form>
+
+  </div>
+</section>
+
+<style>
+  .checkout-page h2 {
+    color: #e8f4ff;
+    letter-spacing: 0.3px;
+  }
+
+  .back-link {
+    color: #a8c4e0;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .back-link:hover {
+    color: #ff5252;
+  }
+
+  .secure-pill {
+    background: rgba(229, 46, 46, 0.12);
+    color: #ff5252;
+    border: 1px solid rgba(229, 46, 46, 0.25);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .checkout-steps {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #7a92b0;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .step.active,
+  .step.done {
+    color: #e8f4ff;
+  }
+
+  .step-circle {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(229, 46, 46, 0.1);
+    border: 1px solid rgba(229, 46, 46, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+  }
+
+  .step.active .step-circle {
+    background: linear-gradient(135deg, #e52e2e, #b91c1c);
+    color: #ffffff;
+    border-color: #e52e2e;
+  }
+
+  .step.done .step-circle {
+    background: rgba(0, 255, 198, 0.15);
+    color: #00ffc6;
+    border-color: rgba(0, 255, 198, 0.3);
+  }
+
+  .step-line {
+    width: 40px;
+    height: 1px;
+    background: rgba(229, 46, 46, 0.25);
+  }
+
+  /* Section cards */
+  .checkout-card {
+    background: linear-gradient(145deg, #0D2A52, #102F5A);
+    border: 1px solid rgba(229, 46, 46, 0.2);
+    border-radius: 18px;
+    padding: 30px 26px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+    transition: border-color 0.2s ease;
+  }
+
+  .checkout-card-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .chk-icon-badge {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(0, 180, 255, 0.18), rgba(0, 180, 255, 0.06));
+    border: 1px solid rgba(0, 180, 255, 0.3);
+    color: #00b4ff;
+    font-size: 1.05rem;
+  }
+
+  .chk-icon-badge-light {
+    background: rgba(5, 18, 33, 0.18);
+    border-color: rgba(5, 18, 33, 0.3);
+    color: #051221;
+  }
+
+  .checkout-card-title {
+    color: #e8f4ff;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .checkout-page .form-label {
+    color: #a8c4e0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .req {
+    color: #ff6b6b;
+  }
+
+  /* Informational/helper text (not validation/error messages) needs more
+     contrast against the dark card background than Bootstrap's default
+     .text-muted gray provides — reuse the theme's existing secondary-text
+     color instead of the framework default. Bootstrap's own .text-muted
+     rule uses !important, so the override has to match it or it's silently
+     ignored regardless of selector specificity. */
+  .checkout-page .text-muted {
+    color: #a8c4e0 !important;
+  }
+
+  .chk-input,
+  select.chk-input {
+    background: rgba(0, 180, 255, 0.04);
+    border: 1px solid rgba(0, 180, 255, 0.15);
+    color: #e8f4ff;
+    border-radius: 10px;
+    padding: 11px 14px;
+  }
+
+  .chk-input:focus {
+    background: rgba(0, 180, 255, 0.06);
+    border-color: #00b4ff;
+    box-shadow: 0 0 0 3px rgba(0, 180, 255, 0.15);
+    color: #e8f4ff;
+  }
+
+  .chk-input:disabled {
+    opacity: 0.5;
+  }
+
+  select.chk-input option {
+    color: #000;
+  }
+
+  /* Bootstrap validation styling (visual only) */
+  .was-validated .chk-input:invalid,
+  .was-validated select.chk-input:invalid {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.12);
+  }
+
+  .was-validated .chk-input:valid,
+  .was-validated select.chk-input:valid {
+    border-color: rgba(0, 255, 198, 0.5);
+  }
+
+  .invalid-feedback {
+    font-size: 0.78rem;
+  }
+
+  .chk-input-group .input-group-text {
+    background: rgba(0, 180, 255, 0.06);
+    border: 1px solid rgba(0, 180, 255, 0.15);
+    border-right: none;
+    color: #00b4ff;
+    border-radius: 10px 0 0 10px;
+  }
+
+  .chk-input-group .chk-input {
+    border-radius: 0 10px 10px 0;
+  }
+
+  .chk-checkbox .form-check-input {
+    background-color: rgba(0, 180, 255, 0.06);
+    border: 1px solid rgba(0, 180, 255, 0.3);
+  }
+
+  .chk-checkbox .form-check-input:checked {
+    background-color: #00b4ff;
+    border-color: #00b4ff;
+  }
+
+  .free-delivery-banner {
+    background: rgba(0, 255, 198, 0.08);
+    border: 1px solid rgba(0, 255, 198, 0.25);
+    color: #00ffc6;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  /* Delivery options */
+  .delivery-option,
+  .payment-option {
+    display: block;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .delivery-option input,
+  .payment-option input {
+    position: absolute;
+    opacity: 0;
+  }
+
+  .delivery-option-body {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 1px solid rgba(0, 180, 255, 0.15);
+    background: rgba(0, 180, 255, 0.03);
+    border-radius: 14px;
+    padding: 16px 18px;
+    color: #e8f4ff;
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  .delivery-option-body:hover {
+    border-color: rgba(0, 180, 255, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .delivery-option-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(0, 180, 255, 0.08);
+    color: #00b4ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+  }
+
+  .delivery-option-text {
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .delivery-option-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #00b4ff;
+    color: #051221;
+    display: flex;
+    opacity: 0;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    flex-shrink: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .delivery-option input:checked+.delivery-option-body {
+    border-color: #00b4ff;
+    background: rgba(0, 180, 255, 0.1);
+    box-shadow: 0 0 0 1px #00b4ff;
+  }
+
+  .delivery-option input:checked+.delivery-option-body .delivery-option-check {
+    opacity: 1;
+  }
+
+  .delivery-price {
+    color: #00b4ff;
+    font-weight: 700;
+  }
+
+  /* Payment options */
+  .payment-option-body {
+    border: 1px solid rgba(0, 180, 255, 0.15);
+    background: rgba(0, 180, 255, 0.03);
+    border-radius: 14px;
+    padding: 18px 10px;
+    color: #e8f4ff;
+    text-align: center;
+    transition: all 0.2s ease;
+    font-size: 0.82rem;
+    font-weight: 600;
+    position: relative;
+  }
+
+  .payment-option-body:hover {
+    border-color: rgba(0, 180, 255, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .payment-option-body i:not(.fa-check) {
+    display: block;
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    color: #a8c4e0;
+  }
+
+  .payment-option-check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #00b4ff;
+    color: #051221;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+  }
+
+  .payment-option input:checked+.payment-option-body {
+    border-color: #00b4ff;
+    background: rgba(0, 180, 255, 0.1);
+    box-shadow: 0 0 0 1px #00b4ff;
+  }
+
+  .payment-option input:checked+.payment-option-body i:not(.fa-check) {
+    color: #00b4ff;
+  }
+
+  .payment-option input:checked+.payment-option-body .payment-option-check {
+    display: flex;
+  }
+
+  .payment-option.disabled {
+    cursor: not-allowed;
+  }
+
+  .payment-option.disabled .payment-option-body {
+    opacity: 0.45;
+  }
+
+  .payment-option.disabled .payment-option-body:hover {
+    transform: none;
+    border-color: rgba(0, 180, 255, 0.15);
+  }
+
+  .payment-subfields {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px dashed rgba(0, 180, 255, 0.15);
+  }
+
+  .bank-transfer-card {
+    border: 1px solid rgba(0, 180, 255, 0.15);
+    background: rgba(0, 180, 255, 0.03);
+    border-radius: 14px;
+    padding: 18px;
+    color: #e8f4ff;
+  }
+
+  .bank-transfer-card strong {
+    color: #e8f4ff;
+  }
+
+  /* Order summary */
+  .order-summary-card {
+    background: linear-gradient(145deg, #0a1628, #0f1f3d);
+    border: 1px solid rgba(0, 180, 255, 0.15);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  }
+
+  .order-summary-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #061B3A;
+    border-bottom: 2px solid #e52e2e;
+    color: #ffffff;
+    padding: 20px 24px;
+  }
+
+  .summary-row {
+    color: #a8c4e0;
+  }
+
+  .summary-row span:last-child {
+    color: #e8f4ff;
+  }
+
+  .order-summary-divider {
+    border-bottom: 1px solid rgba(229, 46, 46, 0.2);
+  }
+
+  .total-amount {
+    color: #ff5252;
+  }
+
+  .checkout-items {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .checkout-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 180, 255, 0.08);
+  }
+
+  .checkout-item-img {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    background: rgba(0, 180, 255, 0.06);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .checkout-item-img img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .checkout-item-img-fallback {
+    color: rgba(0, 180, 255, 0.4);
+    font-size: 1.1rem;
+  }
+
+  .checkout-item-qty-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    background: #00b4ff;
+    color: #051221;
+    font-size: 0.62rem;
+    font-weight: 800;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 3px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #0a1628;
+  }
+
+  .checkout-item-info {
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .checkout-item-name {
+    color: #e8f4ff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .checkout-item-meta {
+    color: #7a92b0;
+    font-size: 0.74rem;
+  }
+
+  .checkout-item-price {
+    color: #e8f4ff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  #placeOrderBtn {
+    border-radius: 12px;
+    letter-spacing: 0.3px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  #placeOrderBtn:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(0, 180, 255, 0.25);
+  }
+
+  #placeOrderBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .trust-note {
+    color: #a8c4e0;
+    font-size: 0.8rem;
+  }
+
+  .trust-badges {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    font-size: 0.72rem;
+    color: #7a92b0;
+  }
+
+  .trust-badges span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  @media (max-width: 767px) {
+    .checkout-steps {
+      font-size: 0.75rem;
+    }
+
+    .step-line {
+      width: 20px;
+    }
+
+    .checkout-card {
+      padding: 24px 18px;
+    }
+  }
+</style>
+
+<script>
+  function togglePaymentFields() {
+    const method = document.querySelector('input[name="paymentMethod"]:checked').value;
+    document.getElementById('bankFields').style.display = method === 'Bank Transfer' ? 'block' : 'none';
+  }
+
+  const SUBTOTAL = <%- subtotal %>;
+  const STANDARD_FEE = <%- standardFee %>;
+  const EXPRESS_FEE = <%- expressFee %>;
+  const TAX_RATE = 0.05;
+
+  function formatPKR(n) {
+    return 'Rs. ' + Math.round(n).toLocaleString('en-PK');
+  }
+
+  function updateSummary() {
+    const method = document.querySelector('input[name="deliveryMethod"]:checked').value;
+    const deliveryFee = method === 'Express' ? EXPRESS_FEE : STANDARD_FEE;
+
+    const tax = SUBTOTAL * TAX_RATE;
+    const total = SUBTOTAL + tax + deliveryFee;
+
+    document.getElementById('summaryShipping').textContent = formatPKR(deliveryFee);
+    document.getElementById('summaryTax').textContent = formatPKR(tax);
+    document.getElementById('summaryTotal').textContent = formatPKR(total);
+
+    const today = new Date();
+    const days = method === 'Express' ? 2 : 5;
+    const estDate = new Date(today.getTime() + days * 24 * 60 * 60 * 1000);
+    document.getElementById('estimatedDelivery').innerHTML =
+      '<i class="fas fa-calendar-check me-1"></i> Estimated delivery by ' +
+      estDate.toLocaleDateString('en-PK', { weekday: 'long', month: 'long', day: 'numeric' });
+  }
+
+  function validateCheckoutForm() {
+    const form = document.getElementById('checkoutForm');
+    const btn = document.getElementById('placeOrderBtn');
+    btn.disabled = !form.checkValidity();
+  }
+
+  document.getElementById('checkoutForm').addEventListener('input', validateCheckoutForm);
+  document.getElementById('checkoutForm').addEventListener('change', validateCheckoutForm);
+
+  document.getElementById('checkoutForm').addEventListener('submit', function (e) {
+    this.classList.add('was-validated');
+    if (!this.checkValidity()) {
+      e.preventDefault();
+      return;
+    }
+    document.getElementById('placeOrderText').style.display = 'none';
+    document.getElementById('placeOrderSpinner').style.display = 'inline-block';
+    document.getElementById('placeOrderBtn').disabled = true;
+  });
+
+  // Init on load
+  updateSummary();
+  validateCheckoutForm();
+</script>

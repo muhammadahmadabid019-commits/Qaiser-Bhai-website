@@ -1,0 +1,295 @@
+<section class="section bg-alt orders-page orders-page-animate page-section-padded">
+  <div class="container">
+
+    <div class="text-center mb-5">
+      <span class="tag">Your Purchase History</span>
+      <h2>My <span class="blue">Orders</span></h2>
+      <p class="sub">Track your purchases and monitor their latest status.</p>
+      <% if (orders.length > 0) { %>
+        <span class="orders-count-pill">
+          <i class="fas fa-box me-1"></i><%= orders.length %> Order<%= orders.length !== 1 ? 's' : '' %>
+        </span>
+      <% } %>
+    </div>
+
+    <% if (orders.length === 0) { %>
+      <div class="orders-empty-state text-center">
+        <div class="orders-empty-icon"><i class="fas fa-box-open"></i></div>
+        <h4 class="fw-bold orders-empty-title">You haven't placed any orders yet</h4>
+        <p class="mb-4 orders-empty-sub">When you place an order, it will show up here so you can track it.</p>
+        <a href="/products" class="btn btn-main py-2 px-4">Continue Shopping</a>
+      </div>
+    <% } else { %>
+      <div class="order-card-list">
+        <% orders.forEach(function(order, i) { %>
+          <div class="order-summary-card" style="animation-delay: <%= Math.min(i, 8) * 0.05 %>s;">
+
+            <div class="order-summary-card-top">
+              <div>
+                <div class="order-card-id"><i class="fas fa-receipt"></i> Order #<%= order._id.toString().slice(-8).toUpperCase() %></div>
+                <div class="order-card-date"><i class="fas fa-calendar-alt"></i> <%= order.createdAt.toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' }) %></div>
+              </div>
+              <div class="order-card-total">
+                <span class="order-card-total-label">Total</span>
+                <span class="order-card-total-value"><%= formatPrice(order.totalAmount) %></span>
+              </div>
+            </div>
+
+            <div class="order-card-fields">
+              <div class="order-card-field">
+                <span class="order-card-label"><i class="fas fa-credit-card"></i> Payment</span>
+                <span class="order-card-value"><%= order.paymentMethod %></span>
+              </div>
+              <div class="order-card-field">
+                <span class="order-card-label"><i class="fas fa-file-invoice-dollar"></i> Payment Status</span>
+                <%
+                  const payClass = {
+                    'Pending': 'badge-gray',
+                    'Pending Verification': 'badge-amber',
+                    'Paid': 'badge-green',
+                    'Failed': 'badge-red'
+                  }[order.paymentStatus] || 'badge-gray';
+                %>
+                <span class="status-badge <%= payClass %>"><%= order.paymentStatus %></span>
+              </div>
+              <div class="order-card-field">
+                <span class="order-card-label"><i class="fas fa-truck"></i> Order Status</span>
+                <%
+                  const orderClass = {
+                    'Pending': 'badge-gray',
+                    'Processing': 'badge-blue',
+                    'Shipped': 'badge-cyan',
+                    'Delivered': 'badge-green',
+                    'Cancelled': 'badge-red'
+                  }[order.status] || 'badge-gray';
+                %>
+                <span class="status-badge <%= orderClass %>"><%= order.status %></span>
+              </div>
+            </div>
+
+            <div class="order-card-footer">
+              <a href="/orders/<%= order._id %>" class="btn-order-details">
+                View Details <i class="fas fa-arrow-right ms-2"></i>
+              </a>
+            </div>
+
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+  </div>
+</section>
+
+<style>
+  /* ============================================================
+     Root-cause note on the earlier contrast bug: Bootstrap's .table
+     component resolves cell text color through CSS variables that
+     default to near-black (--bs-emphasis-color: #000), since this site
+     never sets data-bs-theme="dark". This redesign removes the table
+     element entirely in favor of plain divs, so that whole class of bug can no
+     longer occur here — every color below is an explicit value from
+     this page's own scoped styles, nothing is left to a Bootstrap
+     component default.
+     ============================================================ */
+
+  .orders-count-pill {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 14px;
+    background: rgba(0,180,255,0.1);
+    color: #00b4ff;
+    border: 1px solid rgba(0,180,255,0.25);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  /* Empty state */
+  .orders-empty-state {
+    background: linear-gradient(145deg, #0a1628, #0f1f3d);
+    border: 1px solid rgba(0,180,255,0.15);
+    border-radius: 16px;
+    padding: 70px 24px;
+  }
+  .orders-empty-icon {
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 22px;
+    border-radius: 50%;
+    background: rgba(0,180,255,0.08);
+    border: 1px solid rgba(0,180,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    color: #00b4ff;
+  }
+  .orders-empty-title { color: #e8f4ff; }
+  .orders-empty-sub { color: #a8c4e0; }
+
+  /* Order cards */
+  .order-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .order-summary-card {
+    background: linear-gradient(145deg, #0a1628, #0f1f3d);
+    border: 1px solid rgba(0,180,255,0.15);
+    border-radius: 18px;
+    padding: 26px 28px;
+    box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    opacity: 0;
+    animation: orderCardIn 0.5s ease forwards;
+  }
+  .order-summary-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,180,255,0.4);
+    box-shadow: 0 16px 34px rgba(0,180,255,0.15);
+  }
+
+  .order-summary-card-top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(0,180,255,0.1);
+  }
+  .order-card-id {
+    color: #e8f4ff;
+    font-weight: 700;
+    font-size: 1.02rem;
+  }
+  .order-card-id i { color: #00b4ff; margin-right: 6px; }
+  .order-card-date {
+    color: #7a92b0;
+    font-size: 0.82rem;
+    margin-top: 4px;
+  }
+  .order-card-date i { margin-right: 5px; }
+  .order-card-total { text-align: right; }
+  .order-card-total-label {
+    display: block;
+    color: #7a92b0;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-weight: 700;
+  }
+  .order-card-total-value {
+    display: block;
+    color: #00b4ff;
+    font-weight: 800;
+    font-size: 1.25rem;
+  }
+
+  .order-card-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 18px 24px;
+    margin-bottom: 22px;
+  }
+  .order-card-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .order-card-label {
+    color: #7a92b0;
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .order-card-label i { color: #00b4ff; margin-right: 6px; width: 14px; text-align: center; }
+  .order-card-value {
+    color: #e8f4ff;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .order-card-footer {
+    padding-top: 4px;
+  }
+
+  /* Status badges — consistent palette reusing the site's existing
+     accent colors wherever one already exists for that meaning; only
+     the cyan (Shipped) is a new hue, chosen to sit between the site's
+     existing blue and teal-green accents rather than clash with them. */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  .badge-gray   { background: rgba(122,146,176,0.14); color: #a8c4e0; border: 1px solid rgba(122,146,176,0.3); }
+  .badge-amber  { background: rgba(255,193,7,0.14);   color: #ffc107; border: 1px solid rgba(255,193,7,0.35); }
+  .badge-green  { background: rgba(0,255,198,0.12);   color: #00ffc6; border: 1px solid rgba(0,255,198,0.35); }
+  .badge-blue   { background: rgba(0,180,255,0.14);   color: #00b4ff; border: 1px solid rgba(0,180,255,0.35); }
+  .badge-cyan   { background: rgba(0,229,255,0.14);   color: #00e5ff; border: 1px solid rgba(0,229,255,0.35); }
+  .badge-red    { background: rgba(255,107,107,0.14); color: #ff6b6b; border: 1px solid rgba(255,107,107,0.35); }
+
+  /* Primary "View Details" button — matches .btn-main (the site's actual
+     primary button, e.g. "Shop Now", "Send Quote Request") exactly: same
+     gradient, same white text, same hover-lift. Not a new style. */
+  .btn-order-details {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #00b4ff, #0060c0);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.86rem;
+    padding: 10px 22px;
+    border-radius: 50px;
+    text-decoration: none;
+    border: none;
+    box-shadow: 0 4px 18px rgba(0,180,255,0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn-order-details:hover,
+  .btn-order-details:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(0,180,255,0.5);
+    color: #fff;
+  }
+  .btn-order-details:focus-visible {
+    outline: 2px solid #00b4ff;
+    outline-offset: 3px;
+  }
+
+  /* Page fade-in on load (self-contained — does not rely on the
+     sitewide .fade-in class, which has no active scroll-trigger). */
+  .orders-page-animate { animation: ordersPageFadeIn 0.45s ease; }
+  @keyframes ordersPageFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes orderCardIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orders-page-animate, .order-summary-card { animation: none; opacity: 1; }
+    .order-summary-card:hover, .btn-order-details:hover { transform: none; }
+  }
+
+  @media (max-width: 767px) {
+    .order-summary-card { padding: 20px 18px; }
+    .order-card-total { text-align: left; }
+    .order-summary-card-top { flex-direction: column; }
+  }
+</style>

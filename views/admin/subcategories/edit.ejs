@@ -1,0 +1,39 @@
+<div class="mb-4">
+  <a href="/admin/subcategories" class="text-decoration-none text-muted"><i class="fas fa-arrow-left"></i> Back to Subcategories</a>
+  <h2 style="font-weight: 700; color: #0a1628; margin-top: 10px;">Edit Subcategory: <%= subcategory.name %></h2>
+</div>
+
+<div class="card-box" style="max-width: 800px;">
+  <form action="/admin/subcategories/edit/<%= subcategory._id %>" method="POST">
+    <div class="row g-3">
+      <div class="col-md-12 mb-3">
+        <label class="form-label fw-bold">Subcategory Name <span class="text-danger">*</span></label>
+        <input type="text" name="name" class="form-control" value="<%= subcategory.name %>" required>
+      </div>
+
+      <div class="col-md-12 mb-3">
+        <label class="form-label fw-bold">Category <span class="text-danger">*</span></label>
+        <select name="category" class="form-select" required>
+          <option value="">Select a category</option>
+          <% categories.forEach(cat => { %>
+            <option value="<%= cat._id %>" <%= String(subcategory.category) === String(cat._id) ? 'selected' : '' %>>
+              <%= cat.name %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div class="col-12 mb-4">
+        <label class="form-label fw-bold">Description</label>
+        <textarea name="description" class="form-control" rows="3"><%= subcategory.description %></textarea>
+      </div>
+
+      <div class="col-12 text-end">
+        <a href="/admin/subcategories" class="btn btn-light me-2">Cancel</a>
+        <button type="submit" class="btn btn-primary" style="background-color: #1a73e8; border: none;">
+          <i class="fas fa-save"></i> Update Subcategory
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

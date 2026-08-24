@@ -1,0 +1,41 @@
+<h2 style="margin:0 0 16px; font-size:20px; color:#0a1628;">Payment Verified</h2>
+<p style="margin:0 0 16px; font-size:14px; color:#4a5568; line-height:1.6;">
+  Hi <%= order.customerName %>, good news — we've verified your payment for order #<%= orderNumber %>. Your order is now being processed.
+</p>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px; font-size:14px; color:#4a5568;">
+  <tr>
+    <td style="padding:4px 0;"><strong>Order Number:</strong></td>
+    <td style="padding:4px 0; text-align:right;">#<%= orderNumber %></td>
+  </tr>
+  <tr>
+    <td style="padding:4px 0;"><strong>Amount Paid:</strong></td>
+    <td style="padding:4px 0; text-align:right;"><%= formatPrice(order.totalAmount) %></td>
+  </tr>
+  <% if (order.transactionReference) { %>
+  <tr>
+    <td style="padding:4px 0;"><strong>Transaction Reference:</strong></td>
+    <td style="padding:4px 0; text-align:right;"><%= order.transactionReference %></td>
+  </tr>
+  <% } %>
+  <tr>
+    <td style="padding:4px 0;"><strong>Payment Status:</strong></td>
+    <td style="padding:4px 0; text-align:right; color:#0a9d58; font-weight:600;">Paid</td>
+  </tr>
+  <tr>
+    <td style="padding:4px 0;"><strong>Order Status:</strong></td>
+    <td style="padding:4px 0; text-align:right;">Processing</td>
+  </tr>
+</table>
+
+<p style="margin:0 0 24px; font-size:14px; color:#4a5568; line-height:1.6;">
+  We're now preparing your order for shipment. We'll notify you again as soon as it ships.
+</p>
+
+<table role="presentation" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="border-radius:8px; background-color:#00b4ff;">
+      <a href="<%= orderUrl %>" style="display:inline-block; padding:12px 24px; font-size:14px; font-weight:600; color:#051221; text-decoration:none;">View Your Order</a>
+    </td>
+  </tr>
+</table>

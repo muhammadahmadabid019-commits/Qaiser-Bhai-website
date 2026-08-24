@@ -1,0 +1,63 @@
+<div class="mb-4">
+  <a href="/admin/categories" class="text-decoration-none text-muted"><i class="fas fa-arrow-left"></i> Back to Categories</a>
+  <h2 style="font-weight: 700; color: #0a1628; margin-top: 10px;">Edit Category: <%= category.name %></h2>
+</div>
+
+<div class="card-box" style="max-width: 800px;">
+  <form action="/admin/categories/edit/<%= category._id %>" method="POST">
+    <div class="row g-3">
+      <div class="col-md-12 mb-3">
+        <label class="form-label fw-bold">Category Name <span class="text-danger">*</span></label>
+        <input type="text" name="name" class="form-control" value="<%= category.name %>" required>
+      </div>
+
+      <div class="col-12 mb-3">
+        <label class="form-label fw-bold">Description</label>
+        <textarea name="description" class="form-control" rows="3"><%= category.description %></textarea>
+      </div>
+
+      <div class="col-12 mb-3">
+        <label class="form-label fw-bold">Category Type <span class="text-danger">*</span></label>
+        <select name="type" id="typeSelect" class="form-control" required onchange="toggleServiceFields()">
+          <option value="product" <%= category.type === 'product' ? 'selected' : '' %>>Product &mdash; sells physical items (shows in Add Product dropdown)</option>
+          <option value="service" <%= category.type === 'service' ? 'selected' : '' %>>Service &mdash; shows as a card on the homepage Services section</option>
+        </select>
+      </div>
+
+      <div id="serviceFields" style="display:none;">
+        <div class="col-12 mb-3">
+          <label class="form-label fw-bold">Icon (FontAwesome class)</label>
+          <input type="text" name="icon" class="form-control" value="<%= category.icon %>" placeholder="e.g. fa-camera, fa-network-wired, fa-headset">
+          <small class="text-muted">Browse icons at <a href="https://fontawesome.com/search?o=r&m=free" target="_blank">fontawesome.com</a>. Just the icon name, e.g. "fa-camera".</small>
+        </div>
+
+        <div class="col-12 mb-3">
+          <label class="form-label fw-bold">Feature Bullets (one per line)</label>
+          <textarea name="features" class="form-control" rows="4"><%= (category.features || []).join('\n') %></textarea>
+          <small class="text-muted">Each line becomes a checkmark bullet point on the service card.</small>
+        </div>
+
+        <div class="col-12 mb-4 form-check">
+          <input type="checkbox" name="featured" class="form-check-input" id="featuredCheck" <%= category.featured ? 'checked' : '' %>>
+          <label class="form-check-label" for="featuredCheck">Mark as "Most Popular" (highlighted card)</label>
+        </div>
+      </div>
+
+      <div class="col-12 text-end">
+        <a href="/admin/categories" class="btn btn-light me-2">Cancel</a>
+        <button type="submit" class="btn btn-primary" style="background-color: #1a73e8; border: none;">
+          <i class="fas fa-save"></i> Update Category
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  function toggleServiceFields() {
+    const type = document.getElementById('typeSelect').value;
+    document.getElementById('serviceFields').style.display = (type === 'service') ? 'block' : 'none';
+  }
+  // Run on page load so it's correct when editing an existing service category
+  toggleServiceFields();
+</script>

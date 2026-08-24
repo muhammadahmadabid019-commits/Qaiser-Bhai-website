@@ -1,0 +1,62 @@
+<div class="mb-4">
+  <h2 style="font-weight: 700; color: #0a1628;">Manage Admins</h2>
+  <p class="text-muted mb-0">Grant or revoke admin access using a registered user's email address.</p>
+</div>
+
+<div class="row g-3">
+  <!-- Grant Admin Access -->
+  <div class="col-md-6">
+    <div class="card-box h-100">
+      <h5 class="mb-3"><i class="fas fa-user-shield me-2 text-primary"></i>Grant Admin Access</h5>
+      <form action="/admin/users/make-admin" method="POST">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Email Address</label>
+          <input type="email" name="email" class="form-control" placeholder="user@example.com" required>
+          <small class="text-muted">The user must already have an account (registered via Sign Up).</small>
+        </div>
+        <button type="submit" class="btn btn-primary" style="background-color: #1a73e8; border: none;">
+          <i class="fas fa-user-plus"></i> Add Admin
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Revoke Admin Access -->
+  <div class="col-md-6">
+    <div class="card-box h-100">
+      <h5 class="mb-3"><i class="fas fa-user-minus me-2 text-danger"></i>Revoke Admin Access</h5>
+      <form action="/admin/users/remove-admin" method="POST"
+        onsubmit="return confirm('Remove admin access from this email?');">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Email Address</label>
+          <input type="email" name="email" class="form-control" placeholder="user@example.com" required>
+          <small class="text-muted">This user must currently be an admin.</small>
+        </div>
+        <button type="submit" class="btn btn-outline-danger">
+          <i class="fas fa-user-minus"></i> Remove Admin
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Current Admins (for reference) -->
+<div class="card-box mt-3">
+  <h5 class="mb-3"><i class="fas fa-users-cog me-2"></i>Current Admins</h5>
+  <% if (admins.length === 0) { %>
+    <p class="text-muted mb-0">No admins found.</p>
+  <% } else { %>
+    <ul class="list-group list-group-flush">
+      <% admins.forEach(admin => { %>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>
+            <%= admin.name %> &mdash; <span class="text-muted"><%= admin.email %></span>
+            <% if (admin._id.toString() === currentUserId.toString()) { %>
+              <span class="badge bg-info text-dark ms-1">You</span>
+            <% } %>
+          </span>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</div>

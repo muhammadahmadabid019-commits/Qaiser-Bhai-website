@@ -1,0 +1,69 @@
+<div class="mb-4">
+  <h2 style="font-weight: 700; color: #0a1628;">Payment Settings</h2>
+  <p class="text-muted mb-0">Configure Bank Transfer details shown to customers at checkout. Support for Easypaisa, JazzCash, and Card Payment will be added here later.</p>
+</div>
+
+<!-- WhatsApp Booking Settings -->
+<div class="card-box mb-4" style="max-width: 700px;">
+  <form action="/admin/payment-settings/whatsapp" method="POST">
+    <div class="d-flex justify-content-between align-items-center mb-0">
+      <h5 class="m-0"><i class="fab fa-whatsapp me-2"></i>WhatsApp Settings</h5>
+      <div class="d-flex align-items-center gap-3">
+        <div class="form-check form-switch m-0">
+          <input type="checkbox" class="form-check-input" id="whatsappEnabledSwitch" name="whatsappBookingEnabled" <%= appSettings.whatsappBookingEnabled ? 'checked' : '' %>>
+          <label class="form-check-label" for="whatsappEnabledSwitch">Enable WhatsApp Buttons</label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm" style="background-color: #1a73e8; border: none;">
+          <i class="fas fa-save"></i> Save
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+<div class="card-box" style="max-width: 700px;">
+  <form action="/admin/payment-settings/bank-transfer" method="POST">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3" style="border-bottom: 1px solid #eee;">
+      <h5 class="m-0"><i class="fas fa-university me-2"></i>Bank Transfer</h5>
+      <div class="form-check form-switch">
+        <input type="checkbox" class="form-check-input" id="enabledSwitch" name="enabled" <%= bankTransfer.enabled ? 'checked' : '' %>>
+        <label class="form-check-label" for="enabledSwitch">Enabled</label>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Bank Name</label>
+        <input type="text" name="bankName" class="form-control" value="<%= bankTransfer.config.bankName %>" placeholder="e.g. Meezan Bank">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Account Title</label>
+        <input type="text" name="accountTitle" class="form-control" value="<%= bankTransfer.config.accountTitle %>" placeholder="e.g. SecureNet Solutions">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Account Number</label>
+        <input type="text" name="accountNumber" class="form-control" value="<%= bankTransfer.config.accountNumber %>">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">IBAN</label>
+        <input type="text" name="iban" class="form-control" value="<%= bankTransfer.config.iban %>">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Branch <span class="text-muted fw-normal">(optional)</span></label>
+        <input type="text" name="branch" class="form-control" value="<%= bankTransfer.config.branch %>">
+      </div>
+      <div class="col-12">
+        <label class="form-label fw-bold">Payment Instructions</label>
+        <textarea name="instructions" class="form-control" rows="3"><%= bankTransfer.instructions %></textarea>
+        <small class="text-muted">Shown to customers on the checkout and order confirmation pages.</small>
+      </div>
+    </div>
+
+    <div class="mt-4 text-end">
+      <button type="submit" class="btn btn-primary" style="background-color: #1a73e8; border: none;">
+        <i class="fas fa-save"></i> Save Settings
+      </button>
+    </div>
+  </form>
+</div>

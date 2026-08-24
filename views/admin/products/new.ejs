@@ -1,0 +1,136 @@
+<div class="mb-4">
+  <a href="/admin/products" class="text-decoration-none text-muted"><i class="fas fa-arrow-left"></i> Back to Products</a>
+  <h2 style="font-weight: 700; color: #0a1628; margin-top: 10px;">Add New Product</h2>
+</div>
+
+<div class="card-box" style="max-width: 800px;">
+  <form action="/admin/products" method="POST" enctype="multipart/form-data">
+
+    <div class="row g-3">
+      <!-- Name -->
+      <div class="col-md-8 mb-3">
+        <label class="form-label fw-bold">Product Name <span class="text-danger">*</span></label>
+        <input type="text" name="name" class="form-control" required>
+      </div>
+
+      <!-- Brand -->
+      <div class="col-md-4 mb-3">
+        <label class="form-label fw-bold">Brand <span class="text-danger">*</span></label>
+        <input type="text" name="brand" class="form-control" placeholder="e.g. Hikvision" required>
+      </div>
+
+      <!-- Category -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Category <span class="text-danger">*</span></label>
+        <select name="category" id="categorySelect" class="form-select" required>
+          <option value="">Select a category</option>
+          <% categories.forEach(cat => { %>
+            <option value="<%= cat._id %>"><%= cat.name %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <!-- Subcategory -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Subcategory</label>
+        <select name="subcategory" id="subcategorySelect" class="form-select">
+          <option value="">Select a category first</option>
+        </select>
+      </div>
+
+      <!-- Price -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Current Price (PKR) <span class="text-danger">*</span></label>
+        <input type="number" name="price" class="form-control" min="0" step="0.01" required>
+      </div>
+
+      <!-- Previous Price -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Previous Price (PKR)</label>
+        <input type="number" name="previousPrice" class="form-control" min="0" step="0.01">
+        <small class="text-muted">Optional. If set higher than the current price, it will be shown struck through as a discount.</small>
+      </div>
+
+      <!-- Stock -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Stock Quantity <span class="text-danger">*</span></label>
+        <input type="number" name="stock" class="form-control" min="0" required>
+      </div>
+
+      <!-- Rating -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Initial Rating (0-5)</label>
+        <input type="number" name="rating" class="form-control" min="0" max="5" step="0.1" value="0">
+      </div>
+
+      <!-- Image Upload -->
+      <div class="col-12 mb-3">
+        <label class="form-label fw-bold">Product Image</label>
+        <input type="file" name="image" class="form-control" accept="image/*">
+        <small class="text-muted">Max file size: 5MB. Formats allowed: JPG, PNG, GIF, WEBP.</small>
+      </div>
+
+      <!-- Datasheet URL -->
+      <div class="col-12 mb-3">
+        <label class="form-label fw-bold">Datasheet Link</label>
+        <input type="url" name="datasheetUrl" class="form-control" placeholder="https://...">
+        <small class="text-muted">Optional. Link to a PDF datasheet or spec sheet.</small>
+      </div>
+
+      <!-- Description -->
+      <div class="col-12 mb-3">
+        <label class="form-label fw-bold">Short Description</label>
+        <textarea name="description" class="form-control" rows="3"></textarea>
+      </div>
+
+      <!-- Key Features -->
+      <div class="col-12 mb-3">
+        <label class="form-label fw-bold">Key Features</label>
+        <textarea name="keyFeatures" class="form-control" rows="4" placeholder="One feature per line"></textarea>
+        <small class="text-muted">One feature per line. Shown as a bullet list on the product page.</small>
+      </div>
+
+      <!-- Specifications -->
+      <div class="col-12 mb-4">
+        <label class="form-label fw-bold">Technical Specifications</label>
+        <textarea name="specifications" class="form-control" rows="5" placeholder="Label: Value, one per line"></textarea>
+        <small class="text-muted">One spec per line, formatted as "Label: Value" — e.g. "Channels: 16"</small>
+      </div>
+
+      <!-- Submit -->
+      <div class="col-12 text-end">
+        <a href="/admin/products" class="btn btn-light me-2">Cancel</a>
+        <button type="submit" class="btn btn-primary" style="background-color: #1a73e8; border: none;">
+          <i class="fas fa-save"></i> Save Product
+        </button>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  const allSubcategories = <%- JSON.stringify(subcategories.map(s => ({ id: s._id, name: s.name, category: s.category }))) %>;
+
+  function refreshSubcategoryOptions(selectedCategoryId, selectedSubcategoryId) {
+    const subSelect = document.getElementById('subcategorySelect');
+    subSelect.innerHTML = '';
+
+    if (!selectedCategoryId) {
+      subSelect.innerHTML = '<option value="">Select a category first</option>';
+      return;
+    }
+
+    const matches = allSubcategories.filter(s => String(s.category) === String(selectedCategoryId));
+    subSelect.innerHTML = '<option value="">None</option>' +
+      matches.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+
+    if (selectedSubcategoryId) {
+      subSelect.value = selectedSubcategoryId;
+    }
+  }
+
+  document.getElementById('categorySelect').addEventListener('change', function() {
+    refreshSubcategoryOptions(this.value, null);
+  });
+</script>

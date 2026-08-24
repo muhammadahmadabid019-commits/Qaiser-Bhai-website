@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= typeof title !=='undefined' ? title : 'SecureNet Admin' %>
+  </title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f7f6;
+      display: flex;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .admin-sidebar {
+      width: 250px;
+      background-color: #0a1628;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+    }
+
+    .admin-brand {
+      padding: 20px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .admin-nav {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+
+    .admin-nav li a {
+      color: #a8c4e0;
+      text-decoration: none;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transition: all 0.3s;
+    }
+
+    .admin-nav li a:hover,
+    .admin-nav li a.active {
+      background-color: #1a73e8;
+      color: #fff;
+    }
+
+    .admin-main {
+      flex: 1;
+      margin-left: 250px;
+      padding: 30px;
+      background-color: #f8f9fa;
+      min-height: 100vh;
+      max-width: 100%;
+    }
+
+    .card-box {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+    }
+
+    .admin-sidebar-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      background: #0a1628;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+
+    .admin-sidebar-backdrop {
+      display: none;
+    }
+
+    /* Below tablet width, the fixed 250px sidebar leaves almost no room
+       for content (e.g. ~125px on a 375px phone), forcing every admin
+       page's tables/cards to overflow horizontally. Collapse it to an
+       off-canvas panel instead, toggled by a hamburger button, same
+       pattern as the public site's mobile nav. */
+    @media (max-width: 768px) {
+      .admin-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1050;
+      }
+
+      .admin-sidebar.open {
+        transform: translateX(0);
+      }
+
+      .admin-main {
+        margin-left: 0;
+        padding: 20px 16px;
+      }
+
+      .admin-sidebar-toggle {
+        display: inline-flex;
+      }
+
+      .admin-sidebar-backdrop.open {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1040;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop"></div>
+
+  <div class="admin-sidebar" id="adminSidebar">
+    <a href="/admin/dashboard" class="admin-brand">
+      <i class="fas fa-shield-halved"></i> Admin Panel
+    </a>
+    <ul class="admin-nav">
+      <li>
+        <a href="/admin/dashboard"><i class="fas fa-gauge-high"></i> Dashboard</a>
+      </li>
+      <li>
+        <a href="/admin/orders"><i class="fas fa-receipt"></i> Orders</a>
+      </li>
+      <li>
+        <a href="/admin/reviews"><i class="fas fa-star"></i> Reviews</a>
+      </li>
+      <li>
+        <a href="/admin/products"><i class="fas fa-box"></i> Products</a>
+      </li>
+      <li>
+        <a href="/admin/categories"><i class="fas fa-layer-group"></i> Categories</a>
+      </li>
+      <li>
+        <a href="/admin/subcategories"><i class="fas fa-sitemap"></i> Subcategories</a>
+      </li>
+      <li>
+        <a href="/admin/users"><i class="fas fa-user-shield"></i> Manage Admins</a>
+      </li>
+      <li>
+        <a href="/admin/quotes"><i class="fas fa-file-invoice"></i> Quote Requests</a>
+      </li>
+      <li>
+        <a href="/admin/payment-settings"><i class="fas fa-money-check-alt"></i> Payment Settings</a>
+      </li>
+      <li>
+        <a href="/admin/order-retention"><i class="fas fa-clock-rotate-left"></i> Order Retention</a>
+      </li>
+      <li>
+        <a href="/"><i class="fas fa-home"></i> View Site</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="admin-main">
+    <button type="button" class="admin-sidebar-toggle" id="adminSidebarToggle" aria-label="Toggle menu">
+      <i class="fas fa-bars"></i>
+    </button>
+    <%- body %>
+  </div>
+
+  <% if (typeof messages !=='undefined' && ((messages.success && messages.success.length>0) || (messages.error && messages.error.length>0))) { %>
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+      <% if (messages.success && messages.success.length> 0) { %>
+        <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-flash-toast data-bs-delay="5000">
+          <div class="d-flex">
+            <div class="toast-body"><i class="fas fa-check-circle me-2"></i><%= messages.success[0] %></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      <% } %>
+      <% if (messages.error && messages.error.length> 0) { %>
+        <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-flash-toast data-bs-delay="6000">
+          <div class="d-flex">
+            <div class="toast-body"><i class="fas fa-exclamation-triangle me-2"></i><%= messages.error[0] %></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  <% } %>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Instantiating bootstrap.Toast here (after the Bootstrap bundle loads
+    // above, and inside DOMContentLoaded for good measure) is deliberate:
+    // each page's own inline script runs before this file's trailing
+    // scripts load, so a bootstrap.* call made up there would throw
+    // "bootstrap is not defined". This block runs last, so it's safe.
+    // NOTE: do not write literal EJS output-tag syntax inside this
+    // comment (or anywhere in a script block) — EJS scans the raw file
+    // for that syntax regardless of surrounding JS/HTML comments, so
+    // writing it out re-triggers a real template evaluation right here.
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('[data-flash-toast]').forEach(function (el) {
+        new bootstrap.Toast(el).show();
+      });
+    });
+
+    // Mobile off-canvas sidebar toggle (admin panel only, no functional change)
+    (function () {
+      const sidebar = document.getElementById('adminSidebar');
+      const toggle = document.getElementById('adminSidebarToggle');
+      const backdrop = document.getElementById('adminSidebarBackdrop');
+
+      function closeSidebar() {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('open');
+      }
+
+      toggle.addEventListener('click', function () {
+        sidebar.classList.toggle('open');
+        backdrop.classList.toggle('open');
+      });
+
+      backdrop.addEventListener('click', closeSidebar);
+
+      sidebar.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', closeSidebar);
+      });
+    })();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,187 @@
+
+
+<section class="section fade-in bg-alt">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="tag">Shop Online</span>
+      <h2>Our <span class="blue">Products</span></h2>
+      <p class="sub">Find exactly what you need with our advanced filters.</p>
+    </div>
+
+    <!-- Filter Bar (above the grid, responsive) -->
+    <div class="card-box p-4 mb-4" style="text-align: left; background: linear-gradient(145deg, #0a1628, #0f1f3d); border: 1px solid rgba(0,180,255,0.15); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+      <div class="d-flex align-items-center mb-4">
+        <i class="fas fa-sliders-h me-2" style="font-size: 1.2rem; color: #00b4ff;"></i>
+        <h5 class="m-0" style="color: #e8f4ff; font-weight: 800; letter-spacing: 0.5px;">Refine Search</h5>
+      </div>
+
+      <form action="/products" method="GET">
+        <div class="row g-3 align-items-end">
+
+          <!-- Search -->
+          <div class="col-12 col-md-6 col-lg-3">
+            <label class="form-label text-uppercase tracking-wide" style="color: #a8c4e0; font-size: 0.8rem; font-weight: 700;"><i class="fas fa-search me-1"></i> Search Product</label>
+            <input type="text" name="search" class="form-control" placeholder="e.g. Camera" value="<%= query.search || '' %>" style="background: rgba(0,180,255,0.04); border: 1px solid rgba(0,180,255,0.15); color: #e8f4ff; border-radius: 8px; padding: 10px 14px;">
+          </div>
+
+          <!-- Category -->
+          <div class="col-6 col-md-3 col-lg-2">
+            <label class="form-label text-uppercase tracking-wide" style="color: #a8c4e0; font-size: 0.8rem; font-weight: 700;"><i class="fas fa-tags me-1"></i> Category</label>
+            <select name="category" id="categoryFilter" class="form-select" style="background-color: rgba(0,180,255,0.04); border: 1px solid rgba(0,180,255,0.15); color: #e8f4ff; border-radius: 8px; padding: 10px 14px;">
+              <option value="" style="color: #000;">All Categories</option>
+              <% categories.forEach(cat => { %>
+                <option value="<%= cat._id %>" <%= query.category == cat._id ? 'selected' : '' %> style="color: #000;">
+                  <%= cat.name %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- Subcategory -->
+          <div class="col-6 col-md-3 col-lg-2">
+            <label class="form-label text-uppercase tracking-wide" style="color: #a8c4e0; font-size: 0.8rem; font-weight: 700;"><i class="fas fa-layer-group me-1"></i> Subcategory</label>
+            <select name="subcategory" id="subcategoryFilter" class="form-select" style="background-color: rgba(0,180,255,0.04); border: 1px solid rgba(0,180,255,0.15); color: #e8f4ff; border-radius: 8px; padding: 10px 14px;">
+              <option value="" style="color: #000;">All Subcategories</option>
+            </select>
+          </div>
+
+          <!-- Price Range -->
+          <div class="col-6 col-md-3 col-lg-2">
+            <label class="form-label text-uppercase tracking-wide" style="color: #a8c4e0; font-size: 0.8rem; font-weight: 700;"><i class="fas fa-money-bill-wave me-1"></i> Min Price</label>
+            <input type="number" name="minPrice" class="form-control" placeholder="Min" value="<%= query.minPrice || '' %>" min="0" style="background: rgba(0,180,255,0.04); border: 1px solid rgba(0,180,255,0.15); color: #e8f4ff; border-radius: 8px; padding: 10px 14px;">
+          </div>
+          <div class="col-6 col-md-3 col-lg-2">
+            <label class="form-label text-uppercase tracking-wide" style="color: #a8c4e0; font-size: 0.8rem; font-weight: 700;"><i class="fas fa-money-bill-wave me-1"></i> Max Price</label>
+            <input type="number" name="maxPrice" class="form-control" placeholder="Max" value="<%= query.maxPrice || '' %>" min="0" style="background: rgba(0,180,255,0.04); border: 1px solid rgba(0,180,255,0.15); color: #e8f4ff; border-radius: 8px; padding: 10px 14px;">
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-12 col-lg-1 d-flex flex-column flex-lg-column gap-2">
+            <button type="submit" class="btn btn-main w-100 py-2 fw-bold" style="border-radius: 8px;"><i class="fas fa-filter"></i></button>
+            <a href="/products" class="btn btn-out w-100 text-center fw-semibold hover-dark" style="border-radius: 8px; padding: 10px;" title="Clear All Filters"><i class="fas fa-times"></i></a>
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+    <!-- Product Grid (full width) -->
+    <div class="row">
+      <div class="col-12">
+        <% if (products.length === 0) { %>
+          <div class="text-center py-5">
+            <h4 class="text-muted">No products found matching your criteria.</h4>
+            <a href="/products" class="btn btn-main mt-3">Reset Filters</a>
+          </div>
+        <% } else { %>
+          <div class="row g-4">
+            <% products.forEach(product => { %>
+              <div class="col-6 col-md-4 col-lg-3">
+                <%- include('partials/product-card', { product, returnTo: typeof currentUrl !== 'undefined' ? currentUrl : '/products' }) %>
+              </div>
+            <% }) %>
+          </div>
+
+          <!-- Pagination -->
+          <% if (totalPages > 1) { %>
+            <nav class="mt-5" aria-label="Product navigation">
+              <ul class="pagination justify-content-center custom-pagination">
+                <!-- Previous Button -->
+                <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                  <a class="page-link" href="?page=<%= currentPage - 1 %><%= query.search ? '&search=' + query.search : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.subcategory ? '&subcategory=' + query.subcategory : '' %><%= query.minPrice ? '&minPrice=' + query.minPrice : '' %><%= query.maxPrice ? '&maxPrice=' + query.maxPrice : '' %>" tabindex="-1">Previous</a>
+                </li>
+
+                <!-- Page Numbers -->
+                <% for(let i = 1; i <= totalPages; i++) { %>
+                  <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %><%= query.search ? '&search=' + query.search : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.subcategory ? '&subcategory=' + query.subcategory : '' %><%= query.minPrice ? '&minPrice=' + query.minPrice : '' %><%= query.maxPrice ? '&maxPrice=' + query.maxPrice : '' %>"><%= i %></a>
+                  </li>
+                <% } %>
+
+                <!-- Next Button -->
+                <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                  <a class="page-link" href="?page=<%= currentPage + 1 %><%= query.search ? '&search=' + query.search : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.subcategory ? '&subcategory=' + query.subcategory : '' %><%= query.minPrice ? '&minPrice=' + query.minPrice : '' %><%= query.maxPrice ? '&maxPrice=' + query.maxPrice : '' %>">Next</a>
+                </li>
+              </ul>
+            </nav>
+          <% } %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Inline style for custom pagination to match theme -->
+<style>
+  /* Bootstrap's .pagination is a non-wrapping flex row by default, so on
+     narrow screens the tail-end page numbers get pushed past the
+     container edge and clipped. Letting items wrap keeps every page
+     number on-screen without touching the pagination markup/logic. */
+  .custom-pagination {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  .custom-pagination .page-item {
+    display: flex;
+  }
+  .custom-pagination .page-link {
+    color: #0a1628;
+    border-color: #dee2e6;
+    margin: 0 4px;
+    border-radius: 8px;
+    min-width: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .custom-pagination .page-item.active .page-link {
+    background-color: #1a73e8;
+    border-color: #1a73e8;
+    color: white;
+  }
+  .custom-pagination .page-link:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    color: #0a1628;
+  }
+  .custom-pagination .page-item.disabled .page-link {
+    color: #6c757d;
+  }
+
+  @media (max-width: 480px) {
+    .custom-pagination .page-link {
+      min-width: 36px;
+      min-height: 36px;
+      padding: 0.35rem 0.55rem;
+      margin: 2px;
+      font-size: 0.85rem;
+    }
+  }
+</style>
+
+<script>
+  const allSubcategories = <%- JSON.stringify(subcategories.map(s => ({ id: s._id, name: s.name, category: s.category }))) %>;
+  const selectedSubcategoryId = <%- JSON.stringify(query.subcategory || '') %>;
+
+  function refreshSubcategoryFilterOptions(selectedCategoryId, selectedSubcategoryId) {
+    const subSelect = document.getElementById('subcategoryFilter');
+    const matches = selectedCategoryId
+      ? allSubcategories.filter(s => String(s.category) === String(selectedCategoryId))
+      : allSubcategories;
+
+    subSelect.innerHTML = '<option value="" style="color:#000;">All Subcategories</option>' +
+      matches.map(s => `<option value="${s.id}" style="color:#000;">${s.name}</option>`).join('');
+
+    if (selectedSubcategoryId) {
+      subSelect.value = selectedSubcategoryId;
+    }
+  }
+
+  refreshSubcategoryFilterOptions(document.getElementById('categoryFilter').value, selectedSubcategoryId);
+
+  document.getElementById('categoryFilter').addEventListener('change', function() {
+    refreshSubcategoryFilterOptions(this.value, null);
+  });
+</script>

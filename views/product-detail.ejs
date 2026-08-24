@@ -1,0 +1,236 @@
+<%
+  let safeReturnTo = '/products';
+  if (typeof returnTo === 'string' && returnTo.startsWith('/products') && !returnTo.startsWith('//')) {
+    safeReturnTo = returnTo;
+  }
+%>
+<section class="section fade-in bg-alt page-section-padded">
+  <div class="container">
+
+    <!-- Back to Products Link (Preserves exact previous listing state e.g. page/filter/search) -->
+    <div class="mb-3">
+      <a href="<%= safeReturnTo %>" class="back-link">
+        <i class="fas fa-arrow-left me-2"></i>Back to Products
+      </a>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb detail-breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/products">Products</a></li>
+        <% if (product.category) { %>
+          <li class="breadcrumb-item"><a href="/products?category=<%= product.category._id %>"><%= product.category.name %></a></li>
+        <% } %>
+        <% if (product.subcategory) { %>
+          <li class="breadcrumb-item"><a href="/products?category=<%= product.category._id %>&subcategory=<%= product.subcategory._id %>"><%= product.subcategory.name %></a></li>
+        <% } %>
+        <li class="breadcrumb-item active" aria-current="page"><%= product.name %></li>
+      </ol>
+    </nav>
+
+    <!-- Hero -->
+    <div class="card-box p-4 p-md-5 mb-5">
+      <div class="row g-5 align-items-start text-start">
+        <div class="col-md-5">
+          <div class="detail-hero-img">
+            <img src="<%= product.image %>" alt="<%= product.name %>" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" />
+          </div>
+        </div>
+        <div class="col-md-7">
+          <span class="prod-cat"><%= product.category ? product.category.name : 'Uncategorized' %><% if (product.subcategory) { %> / <%= product.subcategory.name %><% } %></span>
+          <h1 style="color: #e8f4ff; font-size: 1.8rem; margin: 10px 0 4px;"><%= product.name %></h1>
+          <p class="prod-brand mb-3">Brand: <%= product.brand %></p>
+
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <span class="text-warning"><i class="fas fa-star"></i> <%= product.rating %></span>
+            <% const stockStatus = getStockStatus(product.stock); %>
+            <% if (stockStatus === 'In Stock') { %>
+              <span class="text-success"><i class="fas fa-check-circle"></i> <%= product.stock %> in stock</span>
+            <% } else if (stockStatus === 'Low Stock') { %>
+              <span class="text-warning"><i class="fas fa-exclamation-triangle"></i> Low Stock (<%= product.stock %>)</span>
+            <% } else { %>
+              <span class="text-danger"><i class="fas fa-times-circle"></i> Out of Stock</span>
+            <% } %>
+          </div>
+
+          <p style="color: #a8c4e0;"><%= product.description %></p>
+
+          <% if (product.keyFeatures && product.keyFeatures.length > 0) { %>
+            <ul class="detail-feature-list mb-4">
+              <% product.keyFeatures.forEach(feature => { %>
+                <li><i class="fas fa-check"></i> <%= feature %></li>
+              <% }) %>
+            </ul>
+          <% } %>
+
+          <div class="d-flex align-items-center gap-2 mb-4">
+            <% if (product.previousPrice && product.previousPrice > product.price) { %>
+              <span class="price-old" style="color: #7a92b0; text-decoration: line-through; font-size: 1.1rem;"><%= formatPrice(product.previousPrice) %></span>
+            <% } %>
+            <span class="price" style="color: #00ffc6; font-size: 1.6rem; font-weight: 800;"><%= formatPrice(product.price) %></span>
+          </div>
+
+          <div class="d-flex flex-wrap gap-3">
+            <% if (product.stock > 0) { %>
+              <form action="/cart/add/<%= product._id %>" method="POST" class="m-0 p-0">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn-cart" style="padding: 12px 26px; font-size: 0.95rem;">
+                  <i class="fas fa-cart-plus"></i> Add to Cart
+                </button>
+              </form>
+            <% } else { %>
+              <button type="button" class="btn-cart" disabled
+                style="padding: 12px 26px; font-size: 0.95rem; opacity: 0.5; cursor: not-allowed;"
+                title="This product is currently out of stock">
+                <i class="fas fa-times-circle"></i> Out of Stock
+              </button>
+            <% } %>
+            <button type="button" class="btn btn-out" data-bs-toggle="modal" data-bs-target="#inquiryModal">
+              <i class="fas fa-comment-dots"></i> Inquire About This Product
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technical Specifications -->
+    <% if (product.specifications && product.specifications.length > 0) { %>
+      <div class="card-box p-4 p-md-5 mb-5 text-start">
+        <h4 style="color: #e8f4ff; margin-bottom: 20px;">Technical Specifications</h4>
+        <div class="table-responsive">
+          <table class="spec-table">
+            <tbody>
+              <% product.specifications.forEach(spec => { %>
+                <tr>
+                  <td class="spec-label"><%= spec.label %></td>
+                  <td class="spec-value"><%= spec.value %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <% if (product.datasheetUrl) { %>
+          <a href="<%= product.datasheetUrl %>" target="_blank" rel="noopener" class="btn btn-out mt-4">
+            <i class="fas fa-file-pdf"></i> Download Datasheet
+          </a>
+        <% } %>
+      </div>
+    <% } else if (product.datasheetUrl) { %>
+      <div class="card-box p-4 p-md-5 mb-5 text-start">
+        <a href="<%= product.datasheetUrl %>" target="_blank" rel="noopener" class="btn btn-out">
+          <i class="fas fa-file-pdf"></i> Download Datasheet
+        </a>
+      </div>
+    <% } %>
+
+    <!-- Related Products -->
+    <% if (relatedProducts && relatedProducts.length > 0) { %>
+      <div class="text-center mb-4">
+        <h4 style="color: #e8f4ff;">Related Products</h4>
+      </div>
+      <div class="row g-4 mb-5">
+        <% relatedProducts.forEach(related => { %>
+          <div class="col-md-6 col-lg-3">
+            <%- include('partials/product-card', { product: related }) %>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+  </div>
+</section>
+
+<!-- Inquiry Modal -->
+<div class="modal fade" id="inquiryModal" tabindex="-1" aria-labelledby="inquiryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content inquiry-modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="inquiryModalLabel">Inquire About <%= product.name %></h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="inquiryForm">
+          <div class="row g-3">
+            <div class="col-12">
+              <label>Full Name *</label>
+              <input type="text" id="inqName" class="form-control" placeholder="Ahmad Ali" required />
+            </div>
+            <div class="col-12">
+              <label>Phone Number *</label>
+              <input type="tel" id="inqPhone" class="form-control" placeholder="+92-300-0000000" required />
+            </div>
+            <div class="col-12">
+              <label>Email Address *</label>
+              <input type="email" id="inqEmail" class="form-control" placeholder="you@example.com" required />
+            </div>
+            <div class="col-12">
+              <label>Message</label>
+              <textarea id="inqMessage" class="form-control" rows="3"><%= `Inquiry about: ${product.name} (${product.brand})` %></textarea>
+            </div>
+            <div class="col-12">
+              <button type="submit" id="inqSubmitBtn" class="btn btn-main w-100">
+                <i class="fas fa-paper-plane"></i> Send Inquiry
+              </button>
+            </div>
+            <div class="col-12">
+              <div id="inqSuccessMsg" class="success-box" style="display:none;">
+                <i class="fas fa-check-circle"></i> Inquiry sent! We'll contact you within 24 hours.
+              </div>
+              <div id="inqErrorMsg" class="error-box" style="display:none;">
+                <i class="fas fa-exclamation-triangle"></i> Something went wrong. Please try again.
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  $(document).ready(function() {
+    if (new URLSearchParams(window.location.search).get('inquire') === '1') {
+      new bootstrap.Modal(document.getElementById('inquiryModal')).show();
+    }
+
+    $('#inquiryForm').on('submit', function(e) {
+      e.preventDefault();
+
+      const $submitBtn = $('#inqSubmitBtn');
+      const originalBtnHtml = $submitBtn.html();
+      $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Sending...');
+
+      $('#inqSuccessMsg').hide();
+      $('#inqErrorMsg').hide();
+
+      const formData = {
+        name: $('#inqName').val(),
+        phone: $('#inqPhone').val(),
+        email: $('#inqEmail').val(),
+        service: 'Product Purchase',
+        message: $('#inqMessage').val()
+      };
+
+      $.ajax({
+        url: '/quote',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        success: function(response) {
+          $submitBtn.prop('disabled', false).html(originalBtnHtml);
+          $('#inqSuccessMsg').fadeIn();
+          $('#inquiryForm')[0].reset();
+        },
+        error: function(xhr) {
+          $submitBtn.prop('disabled', false).html(originalBtnHtml);
+          const responseJson = xhr.responseJSON;
+          const errMsg = responseJson && responseJson.message ? responseJson.message : 'Something went wrong. Please try again.';
+          $('#inqErrorMsg').html(`<i class="fas fa-exclamation-triangle"></i> ${errMsg}`).fadeIn();
+        }
+      });
+    });
+</script>

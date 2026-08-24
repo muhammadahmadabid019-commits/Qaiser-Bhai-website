@@ -1,0 +1,185 @@
+<h2 class="mb-4">Dashboard</h2>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-lg-2">
+    <div class="card-box text-center">
+      <i class="fas fa-box fa-2x mb-2" style="color:#1a73e8;"></i>
+      <h3 class="mb-0"><%= stats.totalProducts %></h3>
+      <small class="text-muted">Products</small>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="card-box text-center">
+      <i class="fas fa-layer-group fa-2x mb-2" style="color:#1a73e8;"></i>
+      <h3 class="mb-0"><%= stats.totalCategories %></h3>
+      <small class="text-muted">Categories</small>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="card-box text-center">
+      <i class="fas fa-sitemap fa-2x mb-2" style="color:#1a73e8;"></i>
+      <h3 class="mb-0"><%= stats.totalSubcategories %></h3>
+      <small class="text-muted">Subcategories</small>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="card-box text-center">
+      <i class="fas fa-file-invoice fa-2x mb-2" style="color:#f0ad4e;"></i>
+      <h3 class="mb-0"><%= stats.totalQuotes %></h3>
+      <small class="text-muted">Quote Requests</small>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="card-box text-center">
+      <i class="fas fa-shopping-cart fa-2x mb-2" style="color:#28a745;"></i>
+      <h3 class="mb-0"><%= stats.totalOrders %></h3>
+      <small class="text-muted">Orders</small>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="card-box text-center">
+      <i class="fas fa-users fa-2x mb-2" style="color:#6f42c1;"></i>
+      <h3 class="mb-0"><%= stats.totalUsers %></h3>
+      <small class="text-muted">Registered Users</small>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-lg-3">
+    <a href="/admin/orders" class="text-decoration-none">
+      <div class="card-box text-center">
+        <i class="fas fa-clock fa-2x mb-2" style="color:#6c757d;"></i>
+        <h3 class="mb-0"><%= stats.pendingOrders %></h3>
+        <small class="text-muted">Pending Orders</small>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4 col-lg-3">
+    <a href="/admin/orders" class="text-decoration-none">
+      <div class="card-box text-center">
+        <i class="fas fa-file-invoice-dollar fa-2x mb-2" style="color:#f0ad4e;"></i>
+        <h3 class="mb-0"><%= stats.pendingPaymentVerification %></h3>
+        <small class="text-muted">Pending Payment Verification</small>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4 col-lg-3">
+    <a href="/admin/orders" class="text-decoration-none">
+      <div class="card-box text-center">
+        <i class="fas fa-check-circle fa-2x mb-2" style="color:#28a745;"></i>
+        <h3 class="mb-0"><%= stats.deliveredOrders %></h3>
+        <small class="text-muted">Delivered Orders</small>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4 col-lg-3">
+    <a href="/admin/orders" class="text-decoration-none">
+      <div class="card-box text-center">
+        <i class="fas fa-times-circle fa-2x mb-2" style="color:#dc3545;"></i>
+        <h3 class="mb-0"><%= stats.cancelledOrders %></h3>
+        <small class="text-muted">Cancelled Orders</small>
+      </div>
+    </a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <!-- Quote Request status cards — click to open Quote Requests filtered by that status -->
+  <div class="col-md-4">
+    <a href="/admin/quotes?status=New" class="text-decoration-none">
+      <div class="card-box text-center">
+        <i class="fas fa-file-invoice fa-2x mb-2" style="color:#f0ad4e;"></i>
+        <h3 class="mb-0"><%= stats.newQuotes %></h3>
+        <small class="text-muted">New Quote Requests</small>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="/admin/quotes?status=In%20Progress" class="text-decoration-none">
+      <div class="card-box text-center">
+        <i class="fas fa-spinner fa-2x mb-2" style="color:#1a73e8;"></i>
+        <h3 class="mb-0"><%= stats.inProgressQuotes %></h3>
+        <small class="text-muted">In Progress Quote Requests</small>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="/admin/quotes?status=Closed" class="text-decoration-none">
+      <div class="card-box text-center">
+        <i class="fas fa-check-circle fa-2x mb-2" style="color:#28a745;"></i>
+        <h3 class="mb-0"><%= stats.closedQuotes %></h3>
+        <small class="text-muted">Closed Quote Requests</small>
+      </div>
+    </a>
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- Low Stock Alerts -->
+  <div class="col-lg-12">
+    <div class="card-box h-100">
+      <h5 class="mb-3"><i class="fas fa-exclamation-triangle me-2 text-danger"></i>Low Stock Alerts</h5>
+      <% if (lowStockProducts.length === 0) { %>
+        <p class="text-muted mb-0">All products are well stocked.</p>
+      <% } else { %>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Stock Left</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% lowStockProducts.forEach(p => { %>
+                <tr>
+                  <td><%= p.name %></td>
+                  <td><span class="badge bg-danger"><%= p.stock %></span></td>
+                  <td><a href="/admin/products/edit/<%= p._id %>" class="btn btn-sm btn-outline-primary">Edit</a></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Recently Added Products -->
+  <div class="col-lg-12">
+    <div class="card-box">
+      <h5 class="mb-3"><i class="fas fa-clock me-2"></i>Recently Added Products</h5>
+      <% if (recentProducts.length === 0) { %>
+        <p class="text-muted mb-0">No products added yet. <a href="/admin/products/new">Add your first product</a>.</p>
+      <% } else { %>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% recentProducts.forEach(p => { %>
+                <tr>
+                  <td><%= p.name %></td>
+                  <td><%= p.category ? p.category.name : '-' %></td>
+                  <td><%= formatPrice(p.price) %></td>
+                  <td><%= p.stock %></td>
+                  <td><a href="/admin/products/edit/<%= p._id %>" class="btn btn-sm btn-outline-primary">Edit</a></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>

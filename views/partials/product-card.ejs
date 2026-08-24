@@ -1,0 +1,47 @@
+<%
+  const returnToParam = (typeof returnTo !== 'undefined' && returnTo) ? '?returnTo=' + encodeURIComponent(returnTo) : '';
+  const detailUrl = '/products/' + product.slug + returnToParam;
+%>
+<div class="product-card product-card-clickable d-flex flex-column h-100" data-href="<%= detailUrl %>">
+  <div class="prod-img">
+    <% if (getStockStatus(product.stock) === 'Out of Stock') { %>
+      <span class="prod-outofstock-badge">Out of Stock</span>
+    <% } %>
+    <img src="<%= product.image %>" alt="<%= product.name %>" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" />
+  </div>
+  <div class="prod-body flex-grow-1 d-flex flex-column text-start">
+    <div class="prod-taxonomy">
+      <span class="prod-cat"><%= product.category ? product.category.name : 'Uncategorized' %></span>
+      <% if (product.subcategory) { %>
+        <span class="prod-subcat"> / <%= product.subcategory.name %></span>
+      <% } %>
+    </div>
+    <h5 class="prod-name"><%= product.name %></h5>
+
+    <div class="prod-price-row">
+      <% if (product.previousPrice && product.previousPrice > product.price) { %>
+        <span class="prod-price-old"><%= formatPrice(product.previousPrice) %></span>
+        <span class="prod-price-current"><%= formatPrice(product.price) %></span>
+        <span class="prod-discount-badge">
+          -<%= Math.round(((product.previousPrice - product.price) / product.previousPrice) * 100) %>%
+        </span>
+      <% } else { %>
+        <span class="prod-price-current"><%= formatPrice(product.price) %></span>
+      <% } %>
+    </div>
+
+    <% if (product.keyFeatures && product.keyFeatures.length > 0) { %>
+      <ul class="prod-highlights">
+        <% product.keyFeatures.slice(0, 3).forEach(feature => { %>
+          <li><i class="fas fa-check"></i> <span><%= feature %></span></li>
+        <% }) %>
+      </ul>
+    <% } %>
+
+    <div class="prod-actions mt-auto">
+      <a href="<%= detailUrl %>" class="btn-view-details">
+        View Details
+      </a>
+    </div>
+  </div>
+</div>
