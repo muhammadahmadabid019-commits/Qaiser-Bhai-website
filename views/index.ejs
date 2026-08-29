@@ -22,13 +22,38 @@
             Services coming soon. Check back shortly!
           </div>
         <% } else { %>
+          <% 
+            const desiredOrder = [
+              "Networking Solutions",
+              "IT Support & Maintenance",
+              "Cloud Solutions",
+              "CCTV Solutions",
+              "Electric Fence",
+              "System / Computer / Laptop Repairing & Maintenance",
+              "Video Intercom"
+            ];
+            
+            services.sort((a, b) => {
+              let indexA = desiredOrder.indexOf(a.name);
+              let indexB = desiredOrder.indexOf(b.name);
+              if (indexA === -1) indexA = 999;
+              if (indexB === -1) indexB = 999;
+              return indexA - indexB;
+            });
+          %>
           <% services.forEach(svc => { %>
             <div class="col-md-4">
               <div class="card-box <%= svc.featured ? 'featured' : '' %>">
                 <% if (svc.featured) { %>
                   <div class="ribbon">Most Popular</div>
                 <% } %>
-                <div class="icon-circle"><i class="fas <%= svc.icon || 'fa-cogs' %>"></i></div>
+                <% if (svc.image) { %>
+                  <div class="service-img-wrapper" style="width: 100%; height: 180px; overflow: hidden; border-radius: 8px; margin-bottom: 18px;">
+                    <img src="<%= svc.image %>" alt="<%= svc.name %>" style="width: 100%; height: 100%; object-fit: cover;">
+                  </div>
+                <% } else { %>
+                  <div class="icon-circle"><i class="fas <%= svc.icon || 'fa-cogs' %>"></i></div>
+                <% } %>
                 <h4><%= svc.name %></h4>
                 <p><%= svc.description %></p>
                 <% if (svc.features && svc.features.length > 0) { %>

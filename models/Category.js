@@ -31,6 +31,11 @@ const CategorySchema = new mongoose.Schema({
     trim: true,
     default: 'fa-cogs' // FontAwesome icon class, e.g. 'fa-camera'
   },
+  image: {
+    type: String,
+    trim: true,
+    default: ''
+  },
   features: [{
     type: String,
     trim: true

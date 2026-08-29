@@ -1,10 +1,10 @@
 <div class="mb-4">
   <a href="/admin/categories" class="text-decoration-none text-muted"><i class="fas fa-arrow-left"></i> Back to Categories</a>
-  <h2 style="font-weight: 700; color: #0A2347; margin-top: 10px;">Edit Category: <%= category.name %></h2>
+  <h2 style="font-weight: 700; color: #082044; margin-top: 10px;">Edit Category: <%= category.name %></h2>
 </div>
 
 <div class="card-box" style="max-width: 800px;">
-  <form action="/admin/categories/edit/<%= category._id %>" method="POST">
+  <form id="categoryForm" action="/admin/categories/edit/<%= category._id %>" method="POST">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <div class="row g-3">
       <div class="col-md-12 mb-3">
@@ -27,7 +27,18 @@
 
       <div id="serviceFields" style="display:none;">
         <div class="col-12 mb-3">
-          <label class="form-label fw-bold">Icon (FontAwesome class)</label>
+          <label class="form-label fw-bold">Service Image</label>
+          <% if (category.image) { %>
+            <div class="mb-2">
+              <img src="<%= category.image %>" alt="Current Image" style="max-height: 100px; border-radius: 4px; border: 1px solid #ccc;">
+            </div>
+          <% } %>
+          <input type="file" name="image" class="form-control" accept="image/*">
+          <small class="text-muted">Upload a new image to replace the current one. If no image exists, the icon below is used.</small>
+        </div>
+
+        <div class="col-12 mb-3">
+          <label class="form-label fw-bold">Icon (FontAwesome class) - Fallback</label>
           <input type="text" name="icon" class="form-control" value="<%= category.icon %>" placeholder="e.g. fa-camera, fa-network-wired, fa-headset">
           <small class="text-muted">Browse icons at <a href="https://fontawesome.com/search?o=r&m=free" target="_blank">fontawesome.com</a>. Just the icon name, e.g. "fa-camera".</small>
         </div>
@@ -53,6 +64,44 @@
     </div>
   </form>
 </div>
+
+<script>
+  document.getElementById('categoryForm').addEventListener('submit', async function(e) {
+    const typeSelect = document.getElementById('typeSelect');
+    if (typeSelect && typeSelect.value === 'product') {
+      // Let the browser handle the form submission natively for products
+      return;
+    }
+
+    e.preventDefault();
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    
+    try {
+      const response = await fetch(this.action, {
+        method: this.method,
+        body: new FormData(this),
+        headers: {
+          'X-CSRF-Token': '<%= csrfToken %>'
+        }
+      });
+      
+      if (response.redirected) {
+        window.history.pushState(null, "", response.url);
+        const html = await response.text();
+        document.open();
+        document.write(html);
+        document.close();
+      } else {
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error(err);
+      window.location.reload();
+    }
+  });
+</script>
 
 <script>
   function toggleServiceFields() {

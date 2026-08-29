@@ -4,6 +4,66 @@ const Category = require('../../models/Category');
 const Subcategory = require('../../models/Subcategory');
 const Product = require('../../models/Product');
 const { escapeRegex } = require('../../utils/validation');
+const multer = require('multer');
+const sharp = require('sharp');
+const path = require('path');
+const fs = require('fs');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = process.env.NODE_ENV === 'production' ? '/tmp' : './public/uploads/categories';
+    if (process.env.NODE_ENV !== 'production' && !fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname).toLowerCase());
+  }
+});
+
+const ALLOWED_IMAGE_EXT = /\.(jpe?g|png|gif|webp|svg|bmp|tiff?|ico|avif|heic|heif)$/i;
+const ALLOWED_IMAGE_MIME = /^image\//i;
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 8 * 1024 * 1024 },
+  fileFilter: function (req, file, cb) {
+    const extOk = ALLOWED_IMAGE_EXT.test(path.extname(file.originalname));
+    const mimeOk = ALLOWED_IMAGE_MIME.test(file.mimetype);
+    if (extOk || mimeOk) {
+      return cb(null, true);
+    }
+    cb(new Error('Only image files are allowed (jpg, png, gif, webp, svg...).'));
+  }
+});
+
+function handleUploadError(err, req, res, next) {
+  if (err instanceof multer.MulterError) {
+    req.flash('error', `Upload failed: ${err.message}`);
+    return res.redirect(req.headers.referer || '/admin/categories');
+  }
+  if (err) {
+    req.flash('error', err.message || 'Invalid image upload.');
+    return res.redirect(req.headers.referer || '/admin/categories');
+  }
+  next();
+}
+
+async function optimizeUploadedImage(file) {
+  const ext = path.extname(file.filename).toLowerCase();
+  if (ext === '.svg' || ext === '.gif') {
+    return `/uploads/categories/${file.filename}`;
+  }
+  const optimizedName = file.filename.slice(0, -ext.length) + '.webp';
+  const optimizedPath = path.join(path.dirname(file.path), optimizedName);
+  await sharp(file.path)
+    .resize({ width: 800, withoutEnlargement: true })
+    .webp({ quality: 82 })
+    .toFile(optimizedPath);
+  fs.unlinkSync(file.path);
+  return `/uploads/categories/${optimizedName}`;
+}
 
 // List all categories
 router.get('/', async (req, res) => {
@@ -38,18 +98,28 @@ router.get('/new', (req, res) => {
 });
 
 // Create Category
-router.post('/', async (req, res) => {
+router.post('/', upload.single('image'), handleUploadError, async (req, res) => {
   try {
     const features = (req.body.features || '')
       .split('\n')
       .map(f => f.trim())
       .filter(f => f.length > 0);
 
+    let imagePath = '';
+    if (req.file && req.body.type === 'service') {
+      try {
+        imagePath = await optimizeUploadedImage(req.file);
+      } catch (e) {
+        console.error('Image optimization failed:', e);
+      }
+    }
+
     await Category.create({
       name: req.body.name,
       description: req.body.description,
       type: req.body.type || 'product',
       icon: req.body.icon || 'fa-cogs',
+      image: imagePath,
       features,
       featured: req.body.featured === 'on'
     });
@@ -78,7 +148,7 @@ router.get('/edit/:id', async (req, res) => {
 });
 
 // Update Category
-router.post('/edit/:id', async (req, res) => {
+router.post('/edit/:id', upload.single('image'), handleUploadError, async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
     if (!category) {
@@ -89,11 +159,21 @@ router.post('/edit/:id', async (req, res) => {
       .map(f => f.trim())
       .filter(f => f.length > 0);
 
+    let imagePath = category.image;
+    if (req.file && req.body.type === 'service') {
+      try {
+        imagePath = await optimizeUploadedImage(req.file);
+      } catch (e) {
+        console.error('Image optimization failed:', e);
+      }
+    }
+
     category.set({
       name: req.body.name,
       description: req.body.description,
       type: req.body.type || 'product',
       icon: req.body.icon || 'fa-cogs',
+      image: imagePath,
       features,
       featured: req.body.featured === 'on'
     });

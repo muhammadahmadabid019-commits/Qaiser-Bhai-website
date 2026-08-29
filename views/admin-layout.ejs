@@ -17,10 +17,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --admin-navy-dark: #061B3A;
-      --admin-navy: #0A2347;
-      --admin-red: #e52e2e;
-      --admin-red-dark: #b91c1c;
+      --admin-navy-dark: #061A36;
+      --admin-navy: #082044;
+      --admin-red: #D62828;
+      --admin-red-dark: #991B1B;
       --admin-bg: #eef2f9;
     }
 
@@ -32,7 +32,14 @@
       margin: 0;
     }
 
-    h1, h2, h3, h4, h5, h6 { color: var(--admin-navy); }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: var(--admin-navy);
+    }
 
     .admin-sidebar {
       width: 260px;
@@ -42,14 +49,14 @@
       flex-direction: column;
       position: fixed;
       height: 100vh;
-      border-right: 1px solid rgba(229,46,46,0.25);
+      border-right: 1px solid rgba(229, 46, 46, 0.25);
     }
 
     .admin-brand {
       padding: 18px 20px;
       font-size: 1.25rem;
       font-weight: 700;
-      border-bottom: 1px solid rgba(229,46,46,0.22);
+      border-bottom: 1px solid rgba(229, 46, 46, 0.22);
       display: flex;
       align-items: center;
       gap: 10px;
@@ -93,14 +100,14 @@
 
     .admin-nav li a:hover,
     .admin-nav li a.active {
-      background: rgba(229,46,46,0.14);
+      background: rgba(229, 46, 46, 0.14);
       color: #fff;
       border-left-color: var(--admin-red);
     }
 
     .admin-nav li a:hover i,
     .admin-nav li a.active i {
-      color: #ff5252;
+      color: #D62828;
     }
 
     .admin-main {
@@ -114,9 +121,9 @@
 
     .card-box {
       background: #fff;
-      border: 1px solid rgba(229,46,46,0.1);
+      border: 1px solid rgba(229, 46, 46, 0.1);
       border-radius: 12px;
-      box-shadow: 0 4px 18px rgba(10,35,71,0.06);
+      box-shadow: 0 4px 18px rgba(10, 35, 71, 0.06);
       padding: 20px;
     }
 
@@ -138,7 +145,7 @@
     .btn-admin-primary:focus {
       background: linear-gradient(135deg, #d42525, #a51616);
       color: #fff;
-      box-shadow: 0 4px 14px rgba(229,46,46,0.3);
+      box-shadow: 0 4px 14px rgba(229, 46, 46, 0.3);
     }
 
     /* Re-colors every plain Bootstrap "primary" component (buttons, text,
@@ -161,19 +168,26 @@
       --bs-btn-disabled-bg: var(--admin-red);
       --bs-btn-disabled-border-color: var(--admin-red);
     }
+
     .btn-outline-primary {
       --bs-btn-color: var(--admin-red);
       --bs-btn-bg: transparent;
       --bs-btn-disabled-color: var(--admin-red);
     }
-    .text-primary { color: var(--admin-red) !important; }
+
+    .text-primary {
+      color: var(--admin-red) !important;
+    }
+
     .form-check-input:checked {
       background-color: var(--admin-red);
       border-color: var(--admin-red);
     }
-    .form-control:focus, .form-select:focus {
+
+    .form-control:focus,
+    .form-select:focus {
       border-color: var(--admin-red);
-      box-shadow: 0 0 0 0.25rem rgba(229,46,46,0.15);
+      box-shadow: 0 0 0 0.25rem rgba(229, 46, 46, 0.15);
     }
 
     .admin-sidebar-toggle {
@@ -224,7 +238,7 @@
         display: block;
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.5);
+        background: rgba(0, 0, 0, 0.5);
         z-index: 1040;
       }
     }
@@ -240,117 +254,138 @@
     // currentPath comes from server.js's global locals middleware.
     const isActiveSection = (prefix) => (typeof currentPath !== 'undefined' && currentPath.startsWith(prefix)) ? 'active' : '';
   %>
-  <div class="admin-sidebar" id="adminSidebar">
-    <a href="/admin/dashboard" class="admin-brand">
-      <img src="/images/unieq-logo.png" alt="unieQ Solutions">
-      Admin Panel
-    </a>
-    <ul class="admin-nav">
-      <li>
-        <a href="/admin/dashboard" class="<%= isActiveSection('/admin/dashboard') %>"><i class="fas fa-gauge-high"></i> Dashboard</a>
-      </li>
-      <li>
-        <a href="/admin/orders" class="<%= isActiveSection('/admin/orders') %>"><i class="fas fa-receipt"></i> Orders</a>
-      </li>
-      <li>
-        <a href="/admin/reviews" class="<%= isActiveSection('/admin/reviews') %>"><i class="fas fa-star"></i> Reviews</a>
-      </li>
-      <li>
-        <a href="/admin/products" class="<%= isActiveSection('/admin/products') %>"><i class="fas fa-box"></i> Products</a>
-      </li>
-      <li>
-        <a href="/admin/categories" class="<%= isActiveSection('/admin/categories') %>"><i class="fas fa-layer-group"></i> Categories</a>
-      </li>
-      <li>
-        <a href="/admin/subcategories" class="<%= isActiveSection('/admin/subcategories') %>"><i class="fas fa-sitemap"></i> Subcategories</a>
-      </li>
-      <li>
-        <a href="/admin/users" class="<%= isActiveSection('/admin/users') %>"><i class="fas fa-user-shield"></i> Manage Admins</a>
-      </li>
-      <li>
-        <a href="/admin/quotes" class="<%= isActiveSection('/admin/quotes') %>"><i class="fas fa-file-invoice"></i> Quote Requests</a>
-      </li>
-      <li>
-        <a href="/admin/payment-settings" class="<%= isActiveSection('/admin/payment-settings') %>"><i class="fas fa-money-check-alt"></i> Payment Settings</a>
-      </li>
-      <li>
-        <a href="/admin/order-retention" class="<%= isActiveSection('/admin/order-retention') %>"><i class="fas fa-clock-rotate-left"></i> Order Retention</a>
-      </li>
-      <li>
-        <a href="/"><i class="fas fa-home"></i> View Site</a>
-      </li>
-    </ul>
-  </div>
 
-  <div class="admin-main">
-    <button type="button" class="admin-sidebar-toggle" id="adminSidebarToggle" aria-label="Toggle menu">
-      <i class="fas fa-bars"></i>
-    </button>
-    <%- body %>
-  </div>
+    <div class="admin-sidebar" id="adminSidebar">
+      <a href="/admin/dashboard" class="admin-brand">
+        <img src="/images/unieq-logo.png" alt="unieQ Solutions">
+        Admin Panel
+      </a>
+      <ul class="admin-nav">
+        <li>
+          <a href="/admin/dashboard" class="<%= isActiveSection('/admin/dashboard') %>"><i
+              class="fas fa-gauge-high"></i> Dashboard</a>
+        </li>
+        <li style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; margin-bottom: 6px;">
+          <a href="/" style="color: #ffffff; font-weight: 600;"><i class="fas fa-external-link-alt" style="color: #D62828;"></i> View Site</a>
+        </li>
+        <li>
+          <a href="/admin/orders" class="<%= isActiveSection('/admin/orders') %>"><i class="fas fa-receipt"></i>
+            Orders</a>
+        </li>
+        <li>
+          <a href="/admin/reviews" class="<%= isActiveSection('/admin/reviews') %>"><i class="fas fa-star"></i>
+            Reviews</a>
+        </li>
+        <li>
+          <a href="/admin/products" class="<%= isActiveSection('/admin/products') %>"><i class="fas fa-box"></i>
+            Products</a>
+        </li>
+        <li>
+          <a href="/admin/categories" class="<%= isActiveSection('/admin/categories') %>"><i
+              class="fas fa-layer-group"></i> Categories</a>
+        </li>
+        <li>
+          <a href="/admin/subcategories" class="<%= isActiveSection('/admin/subcategories') %>"><i
+              class="fas fa-sitemap"></i> Subcategories</a>
+        </li>
+        <li>
+          <a href="/admin/users" class="<%= isActiveSection('/admin/users') %>"><i class="fas fa-user-shield"></i>
+            Manage Admins</a>
+        </li>
+        <li>
+          <a href="/admin/quotes" class="<%= isActiveSection('/admin/quotes') %>"><i class="fas fa-file-invoice"></i>
+            Quote Requests</a>
+        </li>
+        <li>
+          <a href="/admin/payment-settings" class="<%= isActiveSection('/admin/payment-settings') %>"><i
+              class="fas fa-money-check-alt"></i> Payment Settings</a>
+        </li>
+        <li>
+          <a href="/admin/order-retention" class="<%= isActiveSection('/admin/order-retention') %>"><i
+              class="fas fa-clock-rotate-left"></i> Order Retention</a>
+        </li>
 
-  <% if (typeof messages !=='undefined' && ((messages.success && messages.success.length>0) || (messages.error && messages.error.length>0))) { %>
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
-      <% if (messages.success && messages.success.length> 0) { %>
-        <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-flash-toast data-bs-delay="5000">
-          <div class="d-flex">
-            <div class="toast-body"><i class="fas fa-check-circle me-2"></i><%= messages.success[0] %></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-        </div>
-      <% } %>
-      <% if (messages.error && messages.error.length> 0) { %>
-        <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-flash-toast data-bs-delay="6000">
-          <div class="d-flex">
-            <div class="toast-body"><i class="fas fa-exclamation-triangle me-2"></i><%= messages.error[0] %></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-        </div>
-      <% } %>
+      </ul>
     </div>
-  <% } %>
 
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // Instantiating bootstrap.Toast here (after the Bootstrap bundle loads
-    // above, and inside DOMContentLoaded for good measure) is deliberate:
-    // each page's own inline script runs before this file's trailing
-    // scripts load, so a bootstrap.* call made up there would throw
-    // "bootstrap is not defined". This block runs last, so it's safe.
-    // NOTE: do not write literal EJS output-tag syntax inside this
-    // comment (or anywhere in a script block) — EJS scans the raw file
-    // for that syntax regardless of surrounding JS/HTML comments, so
-    // writing it out re-triggers a real template evaluation right here.
-    document.addEventListener('DOMContentLoaded', function () {
-      document.querySelectorAll('[data-flash-toast]').forEach(function (el) {
-        new bootstrap.Toast(el).show();
-      });
-    });
+    <div class="admin-main">
+      <button type="button" class="admin-sidebar-toggle" id="adminSidebarToggle" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <%- body %>
+    </div>
 
-    // Mobile off-canvas sidebar toggle (admin panel only, no functional change)
-    (function () {
-      const sidebar = document.getElementById('adminSidebar');
-      const toggle = document.getElementById('adminSidebarToggle');
-      const backdrop = document.getElementById('adminSidebarBackdrop');
+    <% if (typeof messages !=='undefined' && ((messages.success && messages.success.length>0) || (messages.error &&
+      messages.error.length>0))) { %>
+      <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+        <% if (messages.success && messages.success.length> 0) { %>
+          <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive"
+            aria-atomic="true" data-flash-toast data-bs-delay="5000">
+            <div class="d-flex">
+              <div class="toast-body"><i class="fas fa-check-circle me-2"></i>
+                <%= messages.success[0] %>
+              </div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                aria-label="Close"></button>
+            </div>
+          </div>
+          <% } %>
+            <% if (messages.error && messages.error.length> 0) { %>
+              <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive"
+                aria-atomic="true" data-flash-toast data-bs-delay="6000">
+                <div class="d-flex">
+                  <div class="toast-body"><i class="fas fa-exclamation-triangle me-2"></i>
+                    <%= messages.error[0] %>
+                  </div>
+                  <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+                </div>
+              </div>
+              <% } %>
+      </div>
+      <% } %>
 
-      function closeSidebar() {
-        sidebar.classList.remove('open');
-        backdrop.classList.remove('open');
-      }
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+          // Instantiating bootstrap.Toast here (after the Bootstrap bundle loads
+          // above, and inside DOMContentLoaded for good measure) is deliberate:
+          // each page's own inline script runs before this file's trailing
+          // scripts load, so a bootstrap.* call made up there would throw
+          // "bootstrap is not defined". This block runs last, so it's safe.
+          // NOTE: do not write literal EJS output-tag syntax inside this
+          // comment (or anywhere in a script block) — EJS scans the raw file
+          // for that syntax regardless of surrounding JS/HTML comments, so
+          // writing it out re-triggers a real template evaluation right here.
+          document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('[data-flash-toast]').forEach(function (el) {
+              new bootstrap.Toast(el).show();
+            });
+          });
 
-      toggle.addEventListener('click', function () {
-        sidebar.classList.toggle('open');
-        backdrop.classList.toggle('open');
-      });
+          // Mobile off-canvas sidebar toggle (admin panel only, no functional change)
+          (function () {
+            const sidebar = document.getElementById('adminSidebar');
+            const toggle = document.getElementById('adminSidebarToggle');
+            const backdrop = document.getElementById('adminSidebarBackdrop');
 
-      backdrop.addEventListener('click', closeSidebar);
+            function closeSidebar() {
+              sidebar.classList.remove('open');
+              backdrop.classList.remove('open');
+            }
 
-      sidebar.querySelectorAll('a').forEach(function (link) {
-        link.addEventListener('click', closeSidebar);
-      });
-    })();
-  </script>
+            toggle.addEventListener('click', function () {
+              sidebar.classList.toggle('open');
+              backdrop.classList.toggle('open');
+            });
+
+            backdrop.addEventListener('click', closeSidebar);
+
+            sidebar.querySelectorAll('a').forEach(function (link) {
+              link.addEventListener('click', closeSidebar);
+            });
+          })();
+        </script>
 </body>
 
 </html>
