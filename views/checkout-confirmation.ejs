@@ -60,24 +60,24 @@
           <div class="col-md-6">
             <div class="checkout-card h-100">
               <h5 class="checkout-card-title"><i class="fas fa-map-marker-alt me-2"></i>Delivery Address</h5>
-              <p class="mb-1" style="color:#e8f4ff;"><%= order.customerName %></p>
-              <p class="mb-1" style="color:#a8c4e0;">
+              <p class="mb-1" style="color:#0B1F3A;"><%= order.customerName %></p>
+              <p class="mb-1" style="color:#5C6F82;">
                 <%= [order.shippingAddress.houseNo, order.shippingAddress.street, order.shippingAddress.area].filter(Boolean).join(', ') %>
               </p>
-              <p class="mb-1" style="color:#a8c4e0;">
+              <p class="mb-1" style="color:#5C6F82;">
                 <%= [order.shippingAddress.city, order.shippingAddress.province, order.shippingAddress.postalCode].filter(Boolean).join(', ') %>
               </p>
-              <p class="mb-0" style="color:#a8c4e0;"><i class="fas fa-phone me-1"></i> <%= order.phone %></p>
+              <p class="mb-0" style="color:#5C6F82;"><i class="fas fa-phone me-1"></i> <%= order.phone %></p>
             </div>
           </div>
           <div class="col-md-6">
             <div class="checkout-card h-100">
               <h5 class="checkout-card-title"><i class="fas fa-credit-card me-2"></i>Payment</h5>
-              <p class="mb-1" style="color:#e8f4ff;"><%= order.paymentMethod %></p>
-              <p class="mb-1" style="color:#a8c4e0;">Payment Status: <span class="status-badge"><%= order.paymentStatus %></span></p>
-              <p class="mb-0" style="color:#a8c4e0;">Order Status: <span class="status-badge"><%= order.status %></span></p>
+              <p class="mb-1" style="color:#0B1F3A;"><%= order.paymentMethod %></p>
+              <p class="mb-1" style="color:#5C6F82;">Payment Status: <span class="status-badge"><%= order.paymentStatus %></span></p>
+              <p class="mb-0" style="color:#5C6F82;">Order Status: <span class="status-badge"><%= order.status %></span></p>
               <% if (paymentInstructions) { %>
-                <p class="mt-3 mb-0 small" style="color:#a8c4e0;"><i class="fas fa-info-circle me-1"></i><%= paymentInstructions %></p>
+                <p class="mt-3 mb-0 small" style="color:#5C6F82;"><i class="fas fa-info-circle me-1"></i><%= paymentInstructions %></p>
               <% } %>
               <% if (order.paymentStatus === 'Paid') { %>
                 <p class="mt-3 mb-0 small" style="color:#00ffc6;"><i class="fas fa-check-circle me-1"></i>Payment verified successfully.</p>
@@ -93,31 +93,31 @@
             <h5 class="checkout-card-title"><i class="fas fa-university me-2"></i>Bank Transfer Details</h5>
             <div class="row g-3 mb-4">
               <div class="col-sm-6">
-                <p class="mb-0 small" style="color:#7a92b0;">Bank Name</p>
-                <p class="mb-0" style="color:#e8f4ff;"><%= bankDetails.bankName %></p>
+                <p class="mb-0 small" style="color:#6B7C93;">Bank Name</p>
+                <p class="mb-0" style="color:#0B1F3A;"><%= bankDetails.bankName %></p>
               </div>
               <div class="col-sm-6">
-                <p class="mb-0 small" style="color:#7a92b0;">Account Title</p>
-                <p class="mb-0" style="color:#e8f4ff;"><%= bankDetails.accountTitle %></p>
+                <p class="mb-0 small" style="color:#6B7C93;">Account Title</p>
+                <p class="mb-0" style="color:#0B1F3A;"><%= bankDetails.accountTitle %></p>
               </div>
               <div class="col-sm-6">
-                <p class="mb-0 small" style="color:#7a92b0;">Account Number</p>
-                <p class="mb-0" style="color:#e8f4ff;"><%= bankDetails.accountNumber %></p>
+                <p class="mb-0 small" style="color:#6B7C93;">Account Number</p>
+                <p class="mb-0" style="color:#0B1F3A;"><%= bankDetails.accountNumber %></p>
               </div>
               <div class="col-sm-6">
-                <p class="mb-0 small" style="color:#7a92b0;">IBAN</p>
-                <p class="mb-0" style="color:#e8f4ff;"><%= bankDetails.iban %></p>
+                <p class="mb-0 small" style="color:#6B7C93;">IBAN</p>
+                <p class="mb-0" style="color:#0B1F3A;"><%= bankDetails.iban %></p>
               </div>
               <div class="col-12">
-                <p class="mb-0 small" style="color:#7a92b0;">Amount to Transfer</p>
+                <p class="mb-0 small" style="color:#6B7C93;">Amount to Transfer</p>
                 <p class="mb-0 fw-bold total-amount"><%= formatPrice(order.totalAmount) %></p>
               </div>
             </div>
 
-            <hr style="border-color: rgba(0,180,255,0.15);">
+            <hr style="border-color: rgba(0, 174, 239,0.15);">
 
-            <h6 class="mb-2" style="color:#e8f4ff;">Submit Your Payment Details</h6>
-            <p class="small mb-3" style="color:#a8c4e0;">Please complete your bank transfer and submit your transaction details for verification.</p>
+            <h6 class="mb-2" style="color:#0B1F3A;">Submit Your Payment Details</h6>
+            <p class="small mb-3" style="color:#5C6F82;">Please complete your bank transfer and submit your transaction details for verification.</p>
 
             <% if (order.paymentSubmittedAt) { %>
               <p class="small mb-3" style="color:#00ffc6;">
@@ -133,12 +133,12 @@
                   <input type="text" name="transactionReference" class="form-control chk-input" value="<%= order.transactionReference || '' %>" placeholder="e.g. your bank's transaction ID" minlength="4" maxlength="100" required>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">Payment Receipt <span class="small" style="color:#7a92b0;">(optional, JPG/PNG/PDF, max 5MB)</span></label>
+                  <label class="form-label">Payment Receipt <span class="small" style="color:#6B7C93;">(optional, JPG/PNG/PDF, max 5MB)</span></label>
                   <input type="file" name="paymentProof" class="form-control chk-input" accept=".jpg,.jpeg,.png,.webp,.pdf">
                 </div>
                 <% if (order.paymentProof) { %>
                   <div class="col-12">
-                    <a href="/checkout/confirmation/<%= order._id %>/receipt" target="_blank" class="small" style="color:#00b4ff;">
+                    <a href="/checkout/confirmation/<%= order._id %>/receipt" target="_blank" class="small" style="color:#00AEEF;">
                       <i class="fas fa-file-alt me-1"></i>View your previously uploaded receipt
                     </a>
                   </div>
@@ -176,34 +176,34 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #7a92b0;
+    color: #6B7C93;
     font-size: 0.85rem;
     font-weight: 600;
   }
-  .step.active, .step.done { color: #e8f4ff; }
+  .step.active, .step.done { color: #0B1F3A; }
   .step-circle {
     width: 26px;
     height: 26px;
     border-radius: 50%;
-    background: rgba(0,180,255,0.08);
-    border: 1px solid rgba(0,180,255,0.25);
+    background: rgba(0, 174, 239,0.08);
+    border: 1px solid rgba(0, 174, 239,0.25);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.75rem;
   }
-  .step.active .step-circle { background: linear-gradient(135deg, #D62828, #991B1B); color: #ffffff; border-color: #D62828; }
+  .step.active .step-circle { background: linear-gradient(135deg, #E53935, #C62828); color: #ffffff; border-color: #E53935; }
   .step.done .step-circle { background: rgba(0,255,198,0.15); color: #00ffc6; border-color: rgba(0,255,198,0.3); }
   .step-line {
     width: 40px;
     height: 1px;
-    background: rgba(229,46,46,0.25);
+    background: rgba(11, 31, 58, 0.1);
   }
 
   .secure-pill {
-    background: rgba(229,46,46,0.12);
-    color: #D62828;
-    border: 1px solid rgba(229,46,46,0.25);
+    background: rgba(229, 57, 53,0.12);
+    color: #E53935;
+    border: 1px solid rgba(11, 31, 58, 0.1);
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 0.78rem;
@@ -211,13 +211,13 @@
   }
 
   .checkout-card {
-    background: linear-gradient(145deg, #082044, #102F59);
-    border: 1px solid rgba(229,46,46,0.2);
+    background: #FFFFFF;
+    border: 1px solid rgba(11, 31, 58, 0.1);
     border-radius: 16px;
     padding: 28px 24px;
   }
   .checkout-card-title {
-    color: #e8f4ff;
+    color: #0B1F3A;
     font-weight: 700;
     margin-bottom: 20px;
   }
@@ -228,34 +228,34 @@
     align-items: center;
     gap: 10px;
     padding: 8px 0;
-    border-bottom: 1px solid rgba(0,180,255,0.08);
+    border-bottom: 1px solid rgba(0, 174, 239,0.08);
   }
   .checkout-item-img {
     width: 46px; height: 46px;
-    background: rgba(0,180,255,0.06);
+    background: rgba(0, 174, 239,0.06);
     border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
     overflow: hidden;
   }
   .checkout-item-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
-  .checkout-item-img-fallback { color: rgba(0,180,255,0.4); font-size: 1.1rem; }
+  .checkout-item-img-fallback { color: rgba(0, 174, 239,0.4); font-size: 1.1rem; }
   .checkout-item-info { flex-grow: 1; min-width: 0; }
   .checkout-item-name {
-    color: #e8f4ff;
+    color: #0B1F3A;
     font-size: 0.82rem;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .checkout-item-qty { color: #7a92b0; font-size: 0.75rem; }
-  .checkout-item-price { color: #e8f4ff; font-size: 0.82rem; font-weight: 700; white-space: nowrap; }
+  .checkout-item-qty { color: #6B7C93; font-size: 0.75rem; }
+  .checkout-item-price { color: #0B1F3A; font-size: 0.82rem; font-weight: 700; white-space: nowrap; }
 
-  .order-summary-divider { border-bottom: 1px solid rgba(0,180,255,0.15); }
-  .summary-row { color: #a8c4e0; }
-  .summary-row span:last-child { color: #e8f4ff; }
-  .total-amount { color: #00b4ff; }
+  .order-summary-divider { border-bottom: 1px solid rgba(0, 174, 239,0.15); }
+  .summary-row { color: #5C6F82; }
+  .summary-row span:last-child { color: #0B1F3A; }
+  .total-amount { color: #00AEEF; }
 
   .confirm-icon {
     width: 80px; height: 80px;
@@ -268,9 +268,9 @@
     margin: 0 auto;
   }
   .status-badge {
-    background: rgba(0,180,255,0.1);
-    color: #00b4ff;
-    border: 1px solid rgba(0,180,255,0.25);
+    background: rgba(0, 174, 239,0.1);
+    color: #00AEEF;
+    border: 1px solid rgba(0, 174, 239,0.25);
     padding: 3px 12px;
     border-radius: 20px;
     font-size: 0.78rem;
@@ -281,22 +281,22 @@
      checkout.ejs, so the payment-proof form needs its own copy of the
      input styling rather than relying on classes defined elsewhere. */
   .checkout-page .form-label {
-    color: #a8c4e0;
+    color: #5C6F82;
     font-size: 0.85rem;
     font-weight: 600;
     margin-bottom: 6px;
   }
   .chk-input {
-    background: rgba(0,180,255,0.04);
-    border: 1px solid rgba(0,180,255,0.15);
-    color: #e8f4ff;
+    background: rgba(0, 174, 239,0.04);
+    border: 1px solid rgba(0, 174, 239,0.15);
+    color: #0B1F3A;
     border-radius: 10px;
     padding: 11px 14px;
   }
   .chk-input:focus {
-    background: rgba(0,180,255,0.06);
-    border-color: #00b4ff;
-    box-shadow: 0 0 0 3px rgba(0,180,255,0.15);
-    color: #e8f4ff;
+    background: rgba(0, 174, 239,0.06);
+    border-color: #00AEEF;
+    box-shadow: 0 0 0 3px rgba(0, 174, 239,0.15);
+    color: #0B1F3A;
   }
 </style>

@@ -17,10 +17,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --admin-navy-dark: #061A36;
-      --admin-navy: #082044;
-      --admin-red: #D62828;
-      --admin-red-dark: #991B1B;
+      --admin-navy-dark: #0B1F3A;
+      --admin-navy: #0F2A4A;
+      --admin-red: #E53935;
+      --admin-red-dark: #C62828;
       --admin-bg: #eef2f9;
     }
 
@@ -49,14 +49,14 @@
       flex-direction: column;
       position: fixed;
       height: 100vh;
-      border-right: 1px solid rgba(229, 46, 46, 0.25);
+      border-right: 1px solid rgba(229, 57, 53, 0.25);
     }
 
     .admin-brand {
       padding: 18px 20px;
       font-size: 1.25rem;
       font-weight: 700;
-      border-bottom: 1px solid rgba(229, 46, 46, 0.22);
+      border-bottom: 1px solid rgba(229, 57, 53, 0.22);
       display: flex;
       align-items: center;
       gap: 10px;
@@ -65,7 +65,7 @@
     }
 
     .admin-brand img {
-      height: 32px;
+      height: 46px;
       width: auto;
       object-fit: contain;
     }
@@ -100,14 +100,14 @@
 
     .admin-nav li a:hover,
     .admin-nav li a.active {
-      background: rgba(229, 46, 46, 0.14);
+      background: rgba(229, 57, 53, 0.14);
       color: #fff;
       border-left-color: var(--admin-red);
     }
 
     .admin-nav li a:hover i,
     .admin-nav li a.active i {
-      color: #D62828;
+      color: #E53935;
     }
 
     .admin-main {
@@ -121,7 +121,7 @@
 
     .card-box {
       background: #fff;
-      border: 1px solid rgba(229, 46, 46, 0.1);
+      border: 1px solid rgba(229, 57, 53, 0.1);
       border-radius: 12px;
       box-shadow: 0 4px 18px rgba(10, 35, 71, 0.06);
       padding: 20px;
@@ -143,9 +143,9 @@
 
     .btn-admin-primary:hover,
     .btn-admin-primary:focus {
-      background: linear-gradient(135deg, #d42525, #a51616);
+      background: linear-gradient(135deg, #E53935, #C62828);
       color: #fff;
-      box-shadow: 0 4px 14px rgba(229, 46, 46, 0.3);
+      box-shadow: 0 4px 14px rgba(229, 57, 53, 0.3);
     }
 
     /* Re-colors every plain Bootstrap "primary" component (buttons, text,
@@ -187,7 +187,7 @@
     .form-control:focus,
     .form-select:focus {
       border-color: var(--admin-red);
-      box-shadow: 0 0 0 0.25rem rgba(229, 46, 46, 0.15);
+      box-shadow: 0 0 0 0.25rem rgba(229, 57, 53, 0.15);
     }
 
     .admin-sidebar-toggle {
@@ -257,7 +257,7 @@
 
     <div class="admin-sidebar" id="adminSidebar">
       <a href="/admin/dashboard" class="admin-brand">
-        <img src="/images/unieq-logo.png" alt="unieQ Solutions">
+        <img src="/images/unieq-logo-light.png" onerror="this.onerror=null;this.src='/images/unieq-logo.png'" alt="unieQ Solutions">
         Admin Panel
       </a>
       <ul class="admin-nav">
@@ -266,7 +266,7 @@
               class="fas fa-gauge-high"></i> Dashboard</a>
         </li>
         <li style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; margin-bottom: 6px;">
-          <a href="/" style="color: #ffffff; font-weight: 600;"><i class="fas fa-external-link-alt" style="color: #D62828;"></i> View Site</a>
+          <a href="/" style="color: #ffffff; font-weight: 600;"><i class="fas fa-external-link-alt" style="color: #E53935;"></i> View Site</a>
         </li>
         <li>
           <a href="/admin/orders" class="<%= isActiveSection('/admin/orders') %>"><i class="fas fa-receipt"></i>

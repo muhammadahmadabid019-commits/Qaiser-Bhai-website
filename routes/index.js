@@ -6,11 +6,30 @@ const Category = require('../models/Category');
 const Review = require('../models/Review');
 const { EMAIL_FORMAT, PAKISTAN_MOBILE_FORMAT } = require('../utils/validation');
 const { getAppSettings } = require('../services/appSettingsService');
+const { getBankTransferSettings } = require('../services/paymentSettingsService');
+
+// The homepage "Our Services" section shows exactly these service
+// categories, in exactly this order (by slug). Any other type:'service'
+// row in the DB (e.g. legacy "Video Intercom") is intentionally hidden
+// from the site without being deleted.
+const SERVICE_ORDER = [
+  'networking-solutions',
+  'data-and-server-solutions',
+  'cloud-solutions',
+  'cctv-solutions',
+  'security-solutions',
+  'electric-fence',
+  'it-support-and-maintenance'
+];
+
+const orderServices = (list) =>
+  SERVICE_ORDER.map(slug => list.find(s => s.slug === slug)).filter(Boolean);
 
 // Landing page route
 router.get('/', async (req, res) => {
   try {
-    const services = await Category.find({ type: 'service' }).sort('name');
+    const allServices = await Category.find({ type: 'service' });
+    const services = orderServices(allServices);
     const appSettings = await getAppSettings();
     
     // Only ever query status: 'Approved' — pending/rejected reviews must
@@ -29,6 +48,21 @@ router.get('/', async (req, res) => {
       services: [],
       reviews: []
     });
+  }
+});
+
+// Contact page — office details + the "Get a Free Quote" form. The form
+// POSTs to /quote (same endpoint the product-inquiry modal uses).
+router.get('/contact', async (req, res) => {
+  try {
+    const allServices = await Category.find({ type: 'service' });
+    res.render('contact', {
+      title: 'Contact Us - unieQ Solutions',
+      services: orderServices(allServices)
+    });
+  } catch (err) {
+    console.error('Contact page error:', err);
+    res.render('contact', { title: 'Contact Us - unieQ Solutions', services: [] });
   }
 });
 
@@ -133,6 +167,35 @@ router.post('/reviews', async (req, res) => {
   } catch (err) {
     console.error('Review Submission Error:', err);
     res.status(500).json({ success: false, message: 'Server Error. Failed to save your review.' });
+  }
+});
+
+// GET /services/:slug - public detail page for one service category.
+// Shows the same image + description + feature bullets as the homepage
+// card, plus a booking CTA: "Book via WhatsApp" when the admin has enabled
+// WhatsApp booking, and the Bank Transfer payment details when that method
+// is enabled in admin > Payment Settings.
+router.get('/services/:slug', async (req, res) => {
+  try {
+    const service = await Category.findOne({ type: 'service', slug: req.params.slug });
+    if (!service) {
+      return res.status(404).render('404', { title: 'Service Not Found' });
+    }
+
+    const [appSettings, bankTransfer] = await Promise.all([
+      getAppSettings(),
+      getBankTransferSettings()
+    ]);
+
+    res.render('service-detail', {
+      title: `${service.name} - unieQ Solutions`,
+      service,
+      whatsappBookingEnabled: appSettings.whatsappBookingEnabled,
+      bankTransfer
+    });
+  } catch (err) {
+    console.error('Service Detail Error:', err);
+    res.status(500).render('404', { title: 'Error' });
   }
 });
 

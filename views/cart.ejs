@@ -12,9 +12,9 @@
 
         <% if (cartItems.length===0) { %>
           <div class="cart-empty-state text-center">
-            <i class="fas fa-shopping-cart mb-3" style="font-size: 4rem; opacity: 0.35; color: #D62828;"></i>
-            <h4 class="fw-bold" style="color: #e8f4ff;">Your cart is empty</h4>
-            <p class="mb-4" style="color: #a8c4e0;">Looks like you haven't added anything yet.</p>
+            <i class="fas fa-shopping-cart mb-3" style="font-size: 4rem; opacity: 0.35; color: #E53935;"></i>
+            <h4 class="fw-bold" style="color: #0B1F3A;">Your cart is empty</h4>
+            <p class="mb-4" style="color: #5C6F82;">Looks like you haven't added anything yet.</p>
             <a href="/products" class="btn btn-main py-2 px-4" style="border-radius: 8px;">Start Shopping</a>
           </div>
           <% } else { %>
@@ -63,7 +63,7 @@
 
                   <!-- Unit Price x Qty = Line Subtotal -->
                   <div class="col-4 col-md-3 text-end">
-                    <div class="fw-bold" style="color: #D62828; font-size: 1.05rem;">
+                    <div class="fw-bold" style="color: #E53935; font-size: 1.05rem;">
                       Rs <%= (item.product.price * item.quantity).toLocaleString() %>
                     </div>
                     <small class="text-muted" style="font-size: 0.75rem;">
@@ -86,7 +86,7 @@
 
                 <!-- Cart Actions Footer (Continue Shopping) -->
                 <div class="mt-3 pt-2">
-                  <a href="/products" class="text-decoration-none fw-semibold" style="color: #D62828;"><i
+                  <a href="/products" class="text-decoration-none fw-semibold" style="color: #E53935;"><i
                       class="fas fa-arrow-left me-1"></i> Continue Shopping</a>
                 </div>
 
@@ -101,24 +101,24 @@
             <h5 class="m-0 fw-bold"><i class="fas fa-receipt me-2"></i>Order Summary</h5>
           </div>
           <div class="p-4">
-            <div class="d-flex justify-content-between mb-3" style="color: #a8c4e0;">
+            <div class="d-flex justify-content-between mb-3" style="color: #5C6F82;">
               <span>Subtotal (<%= cartItems.reduce((acc, i)=> acc + i.quantity, 0) %> items)</span>
-              <strong style="color: #e8f4ff;">Rs <%= subtotal.toLocaleString() %></strong>
+              <strong style="color: #0B1F3A;">Rs <%= subtotal.toLocaleString() %></strong>
             </div>
-            <div class="d-flex justify-content-between mb-3" style="color: #a8c4e0;">
+            <div class="d-flex justify-content-between mb-3" style="color: #5C6F82;">
               <span>Shipping Fee</span>
-              <strong style="color: #e8f4ff;">Rs <%= (typeof shipping !== 'undefined' ? shipping : 0).toLocaleString() %></strong>
+              <strong style="color: #0B1F3A;">Rs <%= (typeof shipping !== 'undefined' ? shipping : 0).toLocaleString() %></strong>
             </div>
             <% if (typeof tax !== 'undefined' && tax > 0) { %>
-              <div class="d-flex justify-content-between mb-3" style="color: #a8c4e0;">
+              <div class="d-flex justify-content-between mb-3" style="color: #5C6F82;">
                 <span>Tax</span>
-                <strong style="color: #e8f4ff;">Rs <%= tax.toLocaleString() %></strong>
+                <strong style="color: #0B1F3A;">Rs <%= tax.toLocaleString() %></strong>
               </div>
             <% } %>
             <div class="order-summary-divider my-3"></div>
             <div class="d-flex justify-content-between mb-4 align-items-center">
-              <span class="fw-bold" style="color: #e8f4ff; font-size: 1.1rem;">Total</span>
-              <span class="fw-bold fs-4" style="color: #D62828;">
+              <span class="fw-bold" style="color: #0B1F3A; font-size: 1.1rem;">Total</span>
+              <span class="fw-bold fs-4" style="color: #E53935;">
                 Rs <%= total.toLocaleString() %>
               </span>
             </div>
@@ -133,8 +133,8 @@
               </a>
             <% } %>
 
-            <div class="text-center mt-3" style="font-size: 0.78rem; color: #7a92b0;">
-              <i class="fas fa-shield-alt me-1" style="color: #D62828;"></i> Safe & Secure Checkout
+            <div class="text-center mt-3" style="font-size: 0.78rem; color: #6B7C93;">
+              <i class="fas fa-shield-alt me-1" style="color: #E53935;"></i> Safe & Secure Checkout
             </div>
           </div>
         </div>
@@ -149,39 +149,39 @@
 <!-- WhatsApp Order Modal -->
 <div class="modal fade" id="whatsappOrderModal" tabindex="-1" aria-labelledby="whatsappOrderModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="background: linear-gradient(145deg, #082044, #102F59); border: 1px solid rgba(229, 46, 46, 0.22); color: #e8f4ff;">
-      <div class="modal-header" style="border-bottom: 1px solid rgba(229, 46, 46, 0.2);">
+    <div class="modal-content" style="background: #FFFFFF; border: 1px solid rgba(11, 31, 58, 0.1); color: #0B1F3A;">
+      <div class="modal-header" style="border-bottom: 1px solid rgba(11, 31, 58, 0.1);">
         <h5 class="modal-title fw-bold" id="whatsappOrderModalLabel">Complete Your Order</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form id="whatsappOrderForm">
         <div class="modal-body">
-          <p class="text-muted mb-4" style="color: #a8c4e0 !important; font-size: 0.9rem;">
+          <p class="text-muted mb-4" style="color: #5C6F82 !important; font-size: 0.9rem;">
             Please provide your details below. This information will be used to prepare your WhatsApp order message.
           </p>
 
           <div class="mb-3">
-            <label for="waName" class="form-label fw-bold" style="color: #a8c4e0;">Full Name *</label>
-            <input type="text" class="form-control" id="waName" style="background: rgba(6, 27, 58, 0.6); color: #e8f4ff; border: 1px solid rgba(229, 46, 46, 0.2);" required>
+            <label for="waName" class="form-label fw-bold" style="color: #5C6F82;">Full Name *</label>
+            <input type="text" class="form-control" id="waName" style="background: #F4F7FA; color: #0B1F3A; border: 1px solid rgba(11, 31, 58, 0.1);" required>
           </div>
 
           <div class="mb-3">
-            <label for="waPhone" class="form-label fw-bold" style="color: #a8c4e0;">Phone Number *</label>
-            <input type="tel" class="form-control" id="waPhone" style="background: rgba(6, 27, 58, 0.6); color: #e8f4ff; border: 1px solid rgba(229, 46, 46, 0.2);" pattern="^(\+92|0)[0-9]{10}$" title="Enter a valid Pakistani phone number (e.g. 03001234567)" required>
+            <label for="waPhone" class="form-label fw-bold" style="color: #5C6F82;">Phone Number *</label>
+            <input type="tel" class="form-control" id="waPhone" style="background: #F4F7FA; color: #0B1F3A; border: 1px solid rgba(11, 31, 58, 0.1);" pattern="^(\+92|0)[0-9]{10}$" title="Enter a valid Pakistani phone number (e.g. 03001234567)" required>
           </div>
 
           <div class="mb-3">
-            <label for="waEmail" class="form-label fw-bold" style="color: #a8c4e0;">Email Address <span class="fw-normal text-muted">(Optional)</span></label>
-            <input type="email" class="form-control" id="waEmail" style="background: rgba(6, 27, 58, 0.6); color: #e8f4ff; border: 1px solid rgba(229, 46, 46, 0.2);">
+            <label for="waEmail" class="form-label fw-bold" style="color: #5C6F82;">Email Address <span class="fw-normal text-muted">(Optional)</span></label>
+            <input type="email" class="form-control" id="waEmail" style="background: #F4F7FA; color: #0B1F3A; border: 1px solid rgba(11, 31, 58, 0.1);">
           </div>
 
           <div class="mb-3">
-            <label for="waAddress" class="form-label fw-bold" style="color: #a8c4e0;">Delivery Address *</label>
-            <textarea class="form-control" id="waAddress" rows="2" style="background: rgba(6, 27, 58, 0.6); color: #e8f4ff; border: 1px solid rgba(229, 46, 46, 0.2);" required></textarea>
+            <label for="waAddress" class="form-label fw-bold" style="color: #5C6F82;">Delivery Address *</label>
+            <textarea class="form-control" id="waAddress" rows="2" style="background: #F4F7FA; color: #0B1F3A; border: 1px solid rgba(11, 31, 58, 0.1);" required></textarea>
           </div>
         </div>
-        <div class="modal-footer" style="border-top: 1px solid rgba(229, 46, 46, 0.2);">
-          <button type="button" class="btn btn-outline" data-bs-dismiss="modal" style="color: #a8c4e0; border-color: #a8c4e0;">Cancel</button>
+        <div class="modal-footer" style="border-top: 1px solid rgba(11, 31, 58, 0.1);">
+          <button type="button" class="btn btn-outline" data-bs-dismiss="modal" style="color: #5C6F82; border-color: #5C6F82;">Cancel</button>
           <button type="submit" class="btn btn-main" style="background-color: #25D366; border-color: #25D366;">
             Continue to WhatsApp <i class="fas fa-arrow-right ms-1"></i>
           </button>
@@ -250,23 +250,23 @@
 
 <style>
   .cart-empty-state {
-    background: linear-gradient(145deg, #082044, #102F59);
-    border: 1px solid rgba(229, 46, 46, 0.2);
+    background: #FFFFFF;
+    border: 1px solid rgba(11, 31, 58, 0.1);
     border-radius: 16px;
     padding: 60px 24px;
   }
 
   .cart-item-card {
-    background: linear-gradient(145deg, #082044, #102F59);
-    border: 1px solid rgba(229, 46, 46, 0.2);
+    background: #FFFFFF;
+    border: 1px solid rgba(11, 31, 58, 0.1);
     border-radius: 14px;
     padding: 18px 20px;
     transition: all 0.3s ease;
   }
 
   .cart-item-card:hover {
-    border-color: #D62828;
-    box-shadow: 0 12px 30px rgba(229, 46, 46, 0.18);
+    border-color: #E53935;
+    box-shadow: 0 12px 30px rgba(11, 31, 58, 0.1);
     transform: translateY(-2px);
   }
 
@@ -276,8 +276,8 @@
   }
 
   .cart-item-img-wrap {
-    background: rgba(6, 27, 58, 0.6);
-    border: 1px solid rgba(229, 46, 46, 0.2);
+    background: #F4F7FA;
+    border: 1px solid rgba(11, 31, 58, 0.1);
     border-radius: 10px;
     padding: 8px;
     display: flex;
@@ -289,7 +289,7 @@
   }
 
   .cart-item-link:hover .cart-item-img-wrap {
-    border-color: #D62828;
+    border-color: #E53935;
   }
 
   .cart-item-img-wrap img {
@@ -306,42 +306,42 @@
   .cart-item-img-fallback {
     align-items: center;
     justify-content: center;
-    color: rgba(229, 46, 46, 0.4);
+    color: rgba(229, 57, 53, 0.4);
     font-size: 1.8rem;
     width: 100%;
     height: 100%;
   }
 
   .cart-item-name {
-    color: #e8f4ff;
+    color: #0B1F3A;
     transition: color 0.2s ease;
   }
 
   .cart-item-link:hover .cart-item-name {
-    color: #D62828;
+    color: #E53935;
   }
 
   .badge-category {
     display: inline-block;
-    background: rgba(229, 46, 46, 0.12);
-    color: #D62828;
+    background: rgba(229, 57, 53, 0.12);
+    color: #E53935;
     font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.4px;
     padding: 3px 10px;
     border-radius: 20px;
-    border: 1px solid rgba(229, 46, 46, 0.25);
+    border: 1px solid rgba(11, 31, 58, 0.1);
   }
 
   .quantity-stepper {
     display: inline-flex;
     align-items: stretch;
-    border: 1px solid rgba(229, 46, 46, 0.25);
+    border: 1px solid rgba(11, 31, 58, 0.1);
     border-radius: 8px;
     overflow: hidden;
     width: fit-content;
-    background: rgba(6, 27, 58, 0.6);
+    background: #F4F7FA;
     box-sizing: border-box;
   }
 
@@ -350,12 +350,12 @@
   }
 
   .qty-btn {
-    background: rgba(229, 46, 46, 0.12);
+    background: rgba(229, 57, 53, 0.12);
     border: none;
     margin: 0;
     padding: 0;
     outline: none;
-    color: #D62828;
+    color: #E53935;
     width: 34px;
     flex: 0 0 34px;
     font-size: 1rem;
@@ -371,12 +371,12 @@
   }
 
   .qty-btn:hover {
-    background: #D62828;
+    background: #E53935;
     color: #ffffff;
   }
 
   .qty-btn:focus-visible {
-    outline: 2px solid #D62828;
+    outline: 2px solid #E53935;
     outline-offset: -2px;
   }
 
@@ -390,15 +390,15 @@
   .qty-input {
     background: transparent;
     border: none;
-    border-left: 1px solid rgba(229, 46, 46, 0.2);
-    border-right: 1px solid rgba(229, 46, 46, 0.2);
+    border-left: 1px solid rgba(11, 31, 58, 0.1);
+    border-right: 1px solid rgba(11, 31, 58, 0.1);
     outline: none;
     width: 46px;
     flex: 0 0 46px;
     text-align: center;
     padding: 8px 2px;
     font-weight: 600;
-    color: #e8f4ff;
+    color: #0B1F3A;
     -moz-appearance: textfield;
   }
 
@@ -425,21 +425,21 @@
   }
 
   .order-summary-card {
-    background: linear-gradient(145deg, #082044, #102F59);
-    border: 1px solid rgba(229, 46, 46, 0.22);
+    background: #FFFFFF;
+    border: 1px solid rgba(11, 31, 58, 0.1);
     border-radius: 16px;
     overflow: hidden;
   }
 
   .order-summary-header {
-    background: #061A36;
-    border-bottom: 2px solid #D62828;
+    background: #0B1F3A;
+    border-bottom: 2px solid #E53935;
     color: #ffffff;
     padding: 18px 24px;
   }
 
   .order-summary-divider {
-    border-bottom: 1px solid rgba(229, 46, 46, 0.2);
+    border-bottom: 1px solid rgba(11, 31, 58, 0.1);
   }
 
   @media (max-width: 767px) {

@@ -36,6 +36,14 @@ const CategorySchema = new mongoose.Schema({
     trim: true,
     default: ''
   },
+  // Short one-line blurb shown on the compact homepage service card.
+  // The full `description` + `features` bullets are used on the service
+  // detail page instead.
+  tagline: {
+    type: String,
+    trim: true,
+    default: ''
+  },
   features: [{
     type: String,
     trim: true
