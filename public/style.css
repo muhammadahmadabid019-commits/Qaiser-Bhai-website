@@ -1441,6 +1441,8 @@ h2 {
 
 .footer-links {
   list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .footer-links li {
@@ -1459,6 +1461,8 @@ h2 {
 
 .footer-contact {
   list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .footer-contact li {
@@ -1473,6 +1477,12 @@ h2 {
 .footer-contact li i {
   color: var(--blue);
   margin-top: 2px;
+}
+
+/* Centred footer columns (Quick Links / Services / Contact Info) */
+.footer-col-center .footer-contact li {
+  justify-content: center;
+  text-align: center;
 }
 
 .footer-bottom {
