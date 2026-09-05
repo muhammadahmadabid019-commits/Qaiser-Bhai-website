@@ -170,16 +170,16 @@ h2 {
    Navbar — dark navy
    ------------------------------------------------------------ */
 #mainNavbar {
-  background: var(--navy);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #FFFFFF;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   padding: 8px 0;
   transition: all 0.3s ease;
 }
 
 #mainNavbar.scrolled {
-  background: rgba(11, 31, 58, 0.97);
+  background: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(8px);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
   padding: 5px 0;
 }
 
@@ -190,7 +190,7 @@ h2 {
 .navbar-brand {
   font-size: 1.4rem;
   font-weight: 800;
-  color: #ffffff !important;
+  color: #0B1F3A !important;
   display: inline-flex;
   align-items: center;
 }
@@ -218,16 +218,16 @@ h2 {
 }
 
 .navbar-brand span {
-  color: var(--blue-bright);
+  color: #0B1F3A;
 }
 
 .navbar-brand i {
-  color: var(--blue-bright);
+  color: #0B1F3A;
   margin-right: 6px;
 }
 
 .nav-link {
-  color: rgba(255, 255, 255, 0.85) !important;
+  color: #0B1F3A !important;
   font-weight: 500;
   padding: 6px 14px !important;
   border-radius: 6px;
@@ -282,7 +282,7 @@ h2 {
   display: block;
   width: 25px;
   height: 2px;
-  background-color: #ffffff;
+  background-color: #0B1F3A;
   border-radius: 2px;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
@@ -322,7 +322,7 @@ h2 {
       rgba(11, 31, 58, 0.32) 61%,
       rgba(11, 31, 58, 0.03) 74%,
       rgba(11, 31, 58, 0) 88%),
-    #0B1F3A url('images/hero-banner.jpg') right center / auto 100% no-repeat;
+    #0B1F3A url('images/hero-image(final).png') right center / auto 100% no-repeat;
   display: flex;
   align-items: center;
   padding: 126px 0 80px;
@@ -789,6 +789,7 @@ h2 {
   display: flex;
   width: max-content;
   animation: partners-scroll 48s linear infinite;
+  will-change: transform;
 }
 
 .partners-marquee:hover .partners-track {
@@ -823,6 +824,16 @@ h2 {
   filter: none;
   opacity: 1;
 }
+
+/* EZVIZ and Imou logos are 500×500 square canvases — the visible mark
+   occupies only the central ~45% of the canvas. A larger max-height
+   compensates so the mark renders at the same perceived size as the
+   other partner logos (which are full-bleed 64px-tall strips). */
+.partner-card img[data-partner="ezviz-logo"],
+.partner-card img[data-partner="imou-logo"] {
+  max-height: 110px;
+}
+
 
 @keyframes partners-scroll {
   from { transform: translateX(0); }
@@ -1960,5 +1971,225 @@ h2 {
   }
   .icbs-name {
     font-size: 1.25rem;
+  }
+}
+
+/* ============================================================
+   About Us page  (/about)
+   All selectors are scoped with .about- to avoid touching
+   any existing page styles.
+   ============================================================ */
+
+/* Page hero band */
+.about-page-hero {
+  background: var(--grad-navy);
+  padding: 130px 0 72px;   /* top offset clears fixed navbar */
+  text-align: center;
+}
+
+.about-page-hero h1 {
+  color: #fff;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  margin-top: 12px;
+}
+
+.about-page-hero .sub {
+  color: var(--on-dark-muted);
+}
+
+/* Office image wrapper with a subtle badge */
+.about-img-wrap {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card-hover);
+}
+
+.about-img-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.about-img-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--navy);
+}
+
+.about-img-badge i {
+  color: var(--blue);
+  font-size: 1rem;
+}
+
+/* What We Do — service feature cards */
+.about-service-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 28px 24px;
+  height: 100%;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  box-shadow: var(--shadow-card);
+}
+
+.about-service-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-4px);
+}
+
+.about-service-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--blue), var(--blue-bright));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.about-service-icon i {
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+.about-service-card h5 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--heading);
+}
+
+.about-service-card p {
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* Mission & Vision cards — rendered on .band-navy */
+.about-mv-card {
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 36px 32px;
+  background: rgba(255,255,255,0.05);
+  height: 100%;
+}
+
+.about-mv-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.about-mv-icon i {
+  font-size: 1.4rem;
+  color: #fff;
+}
+
+.about-mv-card h3 {
+  color: #fff;
+  font-size: 1.3rem;
+  margin-bottom: 14px;
+}
+
+.about-mv-card p {
+  color: var(--on-dark-muted);
+  font-size: 0.92rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* CTA section button variant — reuse existing btn-main colours */
+.btn-outline-main {
+  display: inline-flex;
+  align-items: center;
+  padding: 13px 28px;
+  border-radius: 50px;
+  border: 2px solid var(--navy);
+  color: var(--navy);
+  font-weight: 600;
+  font-size: 0.9rem;
+  background: transparent;
+  transition: background 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-outline-main:hover {
+  background: var(--navy);
+  color: #fff;
+}
+
+/* Why Choose Us — polished cards scoped to About page only */
+.about-wcu-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 32px 24px;
+  height: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+
+.about-wcu-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-5px);
+  border-color: var(--blue-bright);
+}
+
+.about-wcu-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--blue-bright));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 6px 18px rgba(20, 93, 160, 0.25);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.about-wcu-card:hover .about-wcu-icon {
+  transform: scale(1.1);
+  box-shadow: 0 8px 24px rgba(20, 93, 160, 0.35);
+}
+
+.about-wcu-icon i {
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+.about-wcu-card h5 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--heading);
+  margin-bottom: 10px;
+}
+
+.about-wcu-card p {
+  font-size: 0.87rem;
+  color: var(--ink-muted);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .about-page-hero {
+    padding: 110px 0 56px;
+  }
+
+  .about-mv-card {
+    padding: 26px 22px;
   }
 }

@@ -1,0 +1,206 @@
+<%# ============================================================
+    About Us — /about
+    Uses the existing layout.ejs wrapper (navbar + footer).
+    All classes reuse the project's existing CSS where possible.
+    Only about-page-specific selectors (.about-*) are new.
+    ============================================================ %>
+
+<%# ── Hero / Page Header ─────────────────────────────────── %>
+<section class="about-page-hero">
+  <div class="container text-center">
+    <span class="tag">Our Story</span>
+    <h1>About <span class="blue">unieQ Solutions</span></h1>
+    <span class="section-heading-accent"></span>
+    <p class="sub mt-3 mx-auto" style="max-width:620px;">
+      Pakistan's trusted technology partner for CCTV, networking, and IT infrastructure since 2017.
+    </p>
+  </div>
+</section>
+
+<%# ── Who We Are ─────────────────────────────────────────── %>
+<section class="section bg-alt fade-in">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <span class="tag">Who We Are</span>
+        <h2 class="mt-2">A Team Built on <span class="blue">Trust &amp; Expertise</span></h2>
+        <span class="section-heading-accent"></span>
+        <p class="sub mt-3">
+          unieQ Solutions is a Lahore-based technology solutions company founded with a clear mission: to provide businesses and individuals across Pakistan with reliable, affordable, and professionally installed technology infrastructure.
+        </p>
+        <p class="sub mt-3">
+          From small offices to large enterprises, we bring the same level of commitment, technical depth, and after-sales support to every project we undertake. Our team of qualified engineers and technicians ensures that each installation is built to last.
+        </p>
+      </div>
+      <div class="col-lg-6">
+        <div class="about-img-wrap">
+          <img src="/images/office.jpg"
+               onerror="this.onerror=null;this.style.display='none'"
+               alt="unieQ Solutions Office"
+               class="img-fluid" />
+        </div>
+        <div class="about-img-badge mt-3">
+          <i class="fas fa-calendar-check"></i>
+          <span>Serving since <strong>2017</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# ── What We Do ─────────────────────────────────────────── %>
+<section class="section fade-in">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="tag">Our Services</span>
+      <h2>What We <span class="blue">Do</span></h2>
+      <span class="section-heading-accent"></span>
+      <p class="sub mt-3">End-to-end technology solutions designed for reliability and growth.</p>
+    </div>
+    <div class="row g-4">
+
+      <div class="col-md-6 col-lg-4">
+        <div class="about-service-card">
+          <div class="about-service-icon"><i class="fas fa-video"></i></div>
+          <h5>CCTV &amp; Surveillance</h5>
+          <p>Professional installation and maintenance of HD/IP camera systems, NVRs, DVRs, and remote monitoring solutions for homes and businesses.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="about-service-card">
+          <div class="about-service-icon"><i class="fas fa-network-wired"></i></div>
+          <h5>Networking Solutions</h5>
+          <p>Structured LAN/WAN cabling, router &amp; switch configuration, Wi-Fi design, and full network infrastructure setup tailored to your environment.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="about-service-card">
+          <div class="about-service-icon"><i class="fas fa-server"></i></div>
+          <h5>Data &amp; Server Solutions</h5>
+          <p>Server room design, NAS/SAN setup, backup systems, and data centre infrastructure for businesses that demand high availability.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="about-service-card">
+          <div class="about-service-icon"><i class="fas fa-cloud"></i></div>
+          <h5>Cloud Solutions</h5>
+          <p>Cloud migration, hybrid infrastructure, and managed cloud services that help businesses scale without compromising on security.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="about-service-card">
+          <div class="about-service-icon"><i class="fas fa-shield-halved"></i></div>
+          <h5>Security Systems</h5>
+          <p>Access control, electric fencing, alarm systems, and integrated security solutions that protect what matters most.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="about-service-card">
+          <div class="about-service-icon"><i class="fas fa-tools"></i></div>
+          <h5>IT Support &amp; Maintenance</h5>
+          <p>On-site and remote technical support, AMC contracts, hardware repair, and proactive maintenance to keep your systems running.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<%# ── Mission & Vision ───────────────────────────────────── %>
+<section class="section band-navy fade-in">
+  <div class="container">
+    <div class="row g-5 justify-content-center">
+
+      <div class="col-lg-5">
+        <div class="about-mv-card">
+          <div class="about-mv-icon"><i class="fas fa-bullseye"></i></div>
+          <h3>Our Mission</h3>
+          <p>
+            To deliver dependable, cutting-edge technology solutions that empower Pakistani businesses to operate securely, efficiently, and confidently — backed by honest pricing and genuine after-sales support.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="about-mv-card">
+          <div class="about-mv-icon"><i class="fas fa-eye"></i></div>
+          <h3>Our Vision</h3>
+          <p>
+            To become Pakistan's most trusted end-to-end technology partner — recognized not just for the quality of our installations, but for the long-term relationships we build with every client we serve.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<%# ── Why Choose Us ──────────────────────────────────────── %>
+<section class="section bg-alt fade-in">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="tag">Why unieQ</span>
+      <h2>Why <span class="blue">Choose Us</span></h2>
+      <span class="section-heading-accent"></span>
+    </div>
+    <div class="row g-4 justify-content-center">
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="about-wcu-card">
+          <div class="about-wcu-icon"><i class="fas fa-certificate"></i></div>
+          <h5>Certified Engineers</h5>
+          <p>Our technical team holds vendor and industry certifications ensuring installations meet professional standards.</p>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="about-wcu-card">
+          <div class="about-wcu-icon"><i class="fas fa-handshake"></i></div>
+          <h5>Honest Pricing</h5>
+          <p>No hidden charges, no vague quotes. We provide clear, itemised proposals before any work begins.</p>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="about-wcu-card">
+          <div class="about-wcu-icon"><i class="fas fa-headset"></i></div>
+          <h5>After-Sales Support</h5>
+          <p>We don't disappear after installation. Our support team is available for troubleshooting, upgrades, and maintenance.</p>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="about-wcu-card">
+          <div class="about-wcu-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <h5>Local Presence</h5>
+          <p>Based in Lahore with rapid on-site response times. Real technicians, real office, real accountability.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<%# ── CTA ────────────────────────────────────────────────── %>
+<section class="section fade-in">
+  <div class="container text-center">
+    <h2>Ready to Work With <span class="blue">unieQ?</span></h2>
+    <span class="section-heading-accent"></span>
+    <p class="sub mt-3 mx-auto" style="max-width:560px;">
+      Get in touch with our team today for a free consultation and quote.
+    </p>
+    <div class="mt-4 d-flex flex-wrap gap-3 justify-content-center">
+      <a href="/contact" class="btn-main">
+        <i class="fas fa-paper-plane me-2"></i>Get a Free Quote
+      </a>
+      <a href="/products" class="btn-outline-main">
+        <i class="fas fa-box me-2"></i>Browse Products
+      </a>
+    </div>
+  </div>
+</section>

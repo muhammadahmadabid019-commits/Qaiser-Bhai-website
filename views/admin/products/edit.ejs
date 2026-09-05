@@ -4,7 +4,7 @@
 </div>
 
 <div class="card-box" style="max-width: 800px;">
-  <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data">
+  <form id="productForm" action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
     <div class="row g-3">
@@ -145,5 +145,35 @@
 
   document.getElementById('categorySelect').addEventListener('change', function() {
     refreshSubcategoryOptions(this.value, null);
+  });
+
+  document.getElementById('productForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    
+    try {
+      const response = await fetch(this.action, {
+        method: this.method,
+        body: new FormData(this),
+        headers: {
+          'X-CSRF-Token': '<%= csrfToken %>'
+        }
+      });
+      
+      if (response.redirected) {
+        window.history.pushState(null, "", response.url);
+        const html = await response.text();
+        document.open();
+        document.write(html);
+        document.close();
+      } else {
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error(err);
+      window.location.reload();
+    }
   });
 </script>

@@ -55,14 +55,17 @@
             ['D-Link', 'd-link'],
             ['Molex', 'molex'],
             ['Grandstream', 'grandstream'],
-            ['Schneider Electric', 'schneider']
+            ['Schneider Electric', 'schneider'],
+            ['EZVIZ', 'ezviz-logo'],
+            ['Imou', 'imou-logo']
           ];
         %>
         <% for (let rep = 0; rep < 2; rep++) { %>
           <% partners.forEach(([name, file]) => { %>
             <div class="partner-card">
               <img src="/images/partners/<%= file %>.png" alt="<%= name %>"
-                   <%= rep === 1 ? 'aria-hidden="true"' : '' %> loading="lazy">
+                   data-partner="<%= file %>"
+                   <%= rep === 1 ? 'aria-hidden="true"' : '' %> loading="eager">
             </div>
           <% }) %>
         <% } %>

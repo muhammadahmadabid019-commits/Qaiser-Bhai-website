@@ -22,8 +22,15 @@ const SERVICE_ORDER = [
   'it-support-and-maintenance'
 ];
 
-const orderServices = (list) =>
-  SERVICE_ORDER.map(slug => list.find(s => s.slug === slug)).filter(Boolean);
+const orderServices = (list) => {
+  // Keep the explicitly ordered core services first
+  const ordered = SERVICE_ORDER.map(slug => list.find(s => s.slug === slug)).filter(Boolean);
+  
+  // Include any additional/new services that aren't in SERVICE_ORDER
+  const remaining = list.filter(s => !SERVICE_ORDER.includes(s.slug));
+  
+  return [...ordered, ...remaining];
+};
 
 // Landing page route
 router.get('/', async (req, res) => {
@@ -64,6 +71,11 @@ router.get('/contact', async (req, res) => {
     console.error('Contact page error:', err);
     res.render('contact', { title: 'Contact Us - unieQ Solutions', services: [] });
   }
+});
+
+// About Us page — static informational page, no DB queries required.
+router.get('/about', (req, res) => {
+  res.render('about', { title: 'About Us - unieQ Solutions' });
 });
 
 // POST /quote - Save free quote request. Shared by the homepage contact

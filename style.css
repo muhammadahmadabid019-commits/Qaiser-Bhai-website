@@ -63,16 +63,17 @@ h2 {
 }
 
 #mainNavbar {
-  background: rgba(15, 54, 100, 0.95);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(229,46,46,0.3);
-  padding: 14px 0;
+  background: #FFFFFF;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 8px 0;
   transition: all 0.3s ease;
 }
 
 #mainNavbar.scrolled {
-  background: rgba(15, 54, 100, 0.99);
-  padding: 8px 0;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+  padding: 5px 0;
 }
 
 #mainNavbar.hidden {
@@ -82,7 +83,7 @@ h2 {
 .navbar-brand {
   font-size: 1.4rem;
   font-weight: 800;
-  color: #e8f4ff !important;
+  color: #0B1F3A !important;
   display: inline-flex;
   align-items: center;
 }
@@ -102,16 +103,16 @@ h2 {
 }
 
 .navbar-brand span {
-  color: #e52e2e;
+  color: #0B1F3A;
 }
 
 .navbar-brand i {
-  color: #e52e2e;
+  color: #0B1F3A;
   margin-right: 6px;
 }
 
 .nav-link {
-  color: #a8c4e0 !important;
+  color: #0B1F3A !important;
   font-weight: 500;
   padding: 6px 14px !important;
   border-radius: 6px;
@@ -166,7 +167,7 @@ h2 {
   display: block;
   width: 25px;
   height: 2px;
-  background-color: #e52e2e;
+  background-color: #0B1F3A;
   border-radius: 2px;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
@@ -196,7 +197,7 @@ h2 {
 .hero {
   min-height: 420px;
   background: linear-gradient(135deg, rgba(6,27,58,0.88) 0%, rgba(13,42,82,0.92) 100%),
-              url('images/hero-bg.jpg') center/cover no-repeat;
+              url('images/hero-image(final).png') center/cover no-repeat;
   display: flex;
   align-items: center;
   padding: 110px 0 60px;

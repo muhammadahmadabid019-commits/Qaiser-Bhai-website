@@ -55,13 +55,24 @@ async function optimizeUploadedImage(file) {
   if (ext === '.svg' || ext === '.gif') {
     return `/uploads/categories/${file.filename}`;
   }
-  const optimizedName = file.filename.slice(0, -ext.length) + '.webp';
+  
+  // Append '-opt' to guarantee the output filename is different from the input,
+  // preventing the Sharp "Input file is the same as output file" error for .webp uploads.
+  const optimizedName = file.filename.slice(0, -ext.length) + '-opt.webp';
   const optimizedPath = path.join(path.dirname(file.path), optimizedName);
-  await sharp(file.path)
+  
+  // Read into buffer to prevent Windows file-lock (EBUSY) issues
+  const buffer = fs.readFileSync(file.path);
+  await sharp(buffer)
     .resize({ width: 800, withoutEnlargement: true })
     .webp({ quality: 82 })
     .toFile(optimizedPath);
-  fs.unlinkSync(file.path);
+    
+  // Clean up the original uploaded file
+  if (fs.existsSync(file.path)) {
+    fs.unlinkSync(file.path);
+  }
+  
   return `/uploads/categories/${optimizedName}`;
 }
 
@@ -107,11 +118,7 @@ router.post('/', upload.single('image'), handleUploadError, async (req, res) => 
 
     let imagePath = '';
     if (req.file && req.body.type === 'service') {
-      try {
-        imagePath = await optimizeUploadedImage(req.file);
-      } catch (e) {
-        console.error('Image optimization failed:', e);
-      }
+      imagePath = await optimizeUploadedImage(req.file);
     }
 
     await Category.create({
@@ -161,11 +168,7 @@ router.post('/edit/:id', upload.single('image'), handleUploadError, async (req, 
 
     let imagePath = category.image;
     if (req.file && req.body.type === 'service') {
-      try {
-        imagePath = await optimizeUploadedImage(req.file);
-      } catch (e) {
-        console.error('Image optimization failed:', e);
-      }
+      imagePath = await optimizeUploadedImage(req.file);
     }
 
     category.set({

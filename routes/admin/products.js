@@ -86,13 +86,23 @@ async function optimizeUploadedImage(file) {
     return `/uploads/products/${file.filename}`;
   }
 
-  const optimizedName = file.filename.slice(0, -ext.length) + '.webp';
+  // Append '-opt' to guarantee the output filename is different from the input,
+  // preventing the Sharp "Input file is the same as output file" error for .webp uploads.
+  const optimizedName = file.filename.slice(0, -ext.length) + '-opt.webp';
   const optimizedPath = path.join(path.dirname(file.path), optimizedName);
-  await sharp(file.path)
+  
+  // Read into buffer to prevent Windows file-lock (EBUSY) issues
+  const buffer = fs.readFileSync(file.path);
+  await sharp(buffer)
     .resize({ width: 1200, withoutEnlargement: true })
     .webp({ quality: 82 })
     .toFile(optimizedPath);
-  fs.unlinkSync(file.path);
+    
+  // Clean up the original uploaded file
+  if (fs.existsSync(file.path)) {
+    fs.unlinkSync(file.path);
+  }
+  
   return `/uploads/products/${optimizedName}`;
 }
 
