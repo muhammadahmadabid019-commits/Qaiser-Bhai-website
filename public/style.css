@@ -1383,15 +1383,15 @@ h2 {
    Footer  — locked to its established navy tone (do not change)
    ------------------------------------------------------------ */
 .footer {
-  background: #103A6A;
+  background: #ffffff;
   padding: 70px 0 0;
-  border-top: 1px solid rgba(0, 174, 239, 0.3);
+  border-top: 1px solid var(--line);
 }
 
 .footer-brand {
   font-size: 1.4rem;
   font-weight: 800;
-  color: #e8f4ff;
+  color: var(--heading);
 }
 
 .footer-brand span {
@@ -1413,12 +1413,12 @@ h2 {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: rgba(0, 174, 239, 0.1);
-  border: 1px solid rgba(0, 174, 239, 0.22);
+  background: rgba(20, 93, 160, 0.08);
+  border: 1px solid rgba(20, 93, 160, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--blue-bright);
+  color: var(--blue);
   font-size: 0.88rem;
   transition: all 0.3s ease;
 }
@@ -1431,7 +1431,7 @@ h2 {
 }
 
 .footer-head {
-  color: #e8f4ff;
+  color: var(--heading);
   font-weight: 700;
   margin-bottom: 16px;
   padding-bottom: 8px;
@@ -1448,13 +1448,13 @@ h2 {
 }
 
 .footer-links a {
-  color: #D8E5F3;
+  color: var(--ink);
   font-size: 0.88rem;
   transition: color 0.3s;
 }
 
 .footer-links a:hover {
-  color: var(--blue-bright);
+  color: var(--blue);
 }
 
 .footer-contact {
@@ -1462,7 +1462,7 @@ h2 {
 }
 
 .footer-contact li {
-  color: #D8E5F3;
+  color: var(--ink);
   font-size: 0.87rem;
   margin-bottom: 11px;
   display: flex;
@@ -1471,21 +1471,22 @@ h2 {
 }
 
 .footer-contact li i {
-  color: var(--blue-bright);
+  color: var(--blue);
   margin-top: 2px;
 }
 
 .footer-bottom {
-  border-top: 1px solid rgba(0, 174, 239, 0.15);
+  border-top: 1px solid var(--line);
   margin-top: 50px;
   padding: 22px 0;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  color: #D8E5F3;
+  color: var(--ink-muted);
   font-size: 0.84rem;
+  text-align: center;
 }
 
 /* ------------------------------------------------------------
