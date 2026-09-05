@@ -1637,7 +1637,8 @@ h2 {
 }
 
 .detail-hero-img {
-  height: 100%;
+  width: 100%;
+  aspect-ratio: 16 / 10;
   min-height: 260px;
   border-radius: 12px;
   overflow: hidden;
