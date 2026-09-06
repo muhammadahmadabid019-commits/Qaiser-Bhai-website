@@ -32,6 +32,26 @@ const CATEGORY_PRIORITY_SWITCH = {
   default: 99
 };
 
+// The category / subcategory lists change very rarely (admin edits only) but
+// are needed on every catalog page load — and now on every keystroke of the
+// live filter. Cache them in-process for a few minutes so the common case is
+// two DB queries (count + product aggregate) instead of four.
+const TAXONOMY_TTL_MS = 5 * 60 * 1000;
+let _taxonomyCache = { at: 0, categories: null, subcategories: null };
+
+async function getTaxonomy() {
+  const now = Date.now();
+  if (_taxonomyCache.categories && now - _taxonomyCache.at < TAXONOMY_TTL_MS) {
+    return _taxonomyCache;
+  }
+  const [categories, subcategories] = await Promise.all([
+    Category.find({ type: 'product' }).sort('name').lean(),
+    Subcategory.find().sort('name').lean()
+  ]);
+  _taxonomyCache = { at: now, categories, subcategories };
+  return _taxonomyCache;
+}
+
 router.get('/', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -56,11 +76,17 @@ router.get('/', async (req, res) => {
       matchStage.subcategory = new mongoose.Types.ObjectId(req.query.subcategory);
     }
 
-    // Filter by price range
-    if (req.query.minPrice || req.query.maxPrice) {
+    // Filter by price range — ignore anything that isn't a valid,
+    // non-negative number so a stray "abc" can't turn into a `$gte: NaN`
+    // cast error (500).
+    const minPrice = Number(req.query.minPrice);
+    const maxPrice = Number(req.query.maxPrice);
+    const hasMin = req.query.minPrice != null && req.query.minPrice !== '' && Number.isFinite(minPrice) && minPrice >= 0;
+    const hasMax = req.query.maxPrice != null && req.query.maxPrice !== '' && Number.isFinite(maxPrice) && maxPrice >= 0;
+    if (hasMin || hasMax) {
       matchStage.price = {};
-      if (req.query.minPrice) matchStage.price.$gte = Number(req.query.minPrice);
-      if (req.query.maxPrice) matchStage.price.$lte = Number(req.query.maxPrice);
+      if (hasMin) matchStage.price.$gte = minPrice;
+      if (hasMax) matchStage.price.$lte = maxPrice;
     }
 
     const totalProducts = await Product.countDocuments(matchStage);
@@ -81,8 +107,27 @@ router.get('/', async (req, res) => {
       { $limit: limit }
     ]);
 
-    const categories = await Category.find({ type: 'product' }).sort('name');
-    const subcategories = await Subcategory.find().sort('name');
+    // Query params echoed back to the view for filter state + pagination
+    // links. Strip the transport-only `partial` flag so it never leaks into
+    // the address bar or a pagination href.
+    const viewQuery = { ...req.query };
+    delete viewQuery.partial;
+    const cleanQs = new URLSearchParams(viewQuery).toString();
+    const currentUrl = '/products' + (cleanQs ? '?' + cleanQs : '');
+
+    // Live filter / pagination: return just the results fragment.
+    if (req.query.partial === '1') {
+      return res.render('partials/product-results', {
+        layout: false,
+        products,
+        totalPages,
+        currentPage: page,
+        query: viewQuery,
+        currentUrl
+      });
+    }
+
+    const { categories, subcategories } = await getTaxonomy();
 
     res.render('products', {
       title: 'Our Products - unieQ Solutions',
@@ -91,8 +136,8 @@ router.get('/', async (req, res) => {
       subcategories,
       currentPage: page,
       totalPages,
-      query: req.query, // Pass query params back to the view to maintain filter state
-      currentUrl: req.originalUrl
+      query: viewQuery, // Pass query params back to the view to maintain filter state
+      currentUrl
     });
   } catch (err) {
     console.error(err);

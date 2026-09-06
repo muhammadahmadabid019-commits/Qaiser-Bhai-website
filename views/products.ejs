@@ -15,13 +15,13 @@
         <h5 class="m-0" style="color: #0B1F3A; font-weight: 800; letter-spacing: 0.5px;">Refine Search</h5>
       </div>
 
-      <form action="/products" method="GET">
+      <form action="/products" method="GET" id="filterForm">
         <div class="row g-3 align-items-end">
 
           <!-- Search -->
-          <div class="col-12 col-md-6 col-lg-3">
+          <div class="col-12 col-md-6 col-lg-4">
             <label class="form-label text-uppercase tracking-wide" style="color: #5C6F82; font-size: 0.8rem; font-weight: 700;"><i class="fas fa-search me-1"></i> Search Product</label>
-            <input type="text" name="search" class="form-control" placeholder="e.g. Camera" value="<%= query.search || '' %>" style="background: rgba(0, 174, 239,0.04); border: 1px solid rgba(0, 174, 239,0.15); color: #0B1F3A; border-radius: 8px; padding: 10px 14px;">
+            <input type="text" name="search" class="form-control" placeholder="e.g. Camera" value="<%= query.search || '' %>" autocomplete="off" style="background: rgba(0, 174, 239,0.04); border: 1px solid rgba(0, 174, 239,0.15); color: #0B1F3A; border-radius: 8px; padding: 10px 14px;">
           </div>
 
           <!-- Category -->
@@ -55,57 +55,25 @@
             <input type="number" name="maxPrice" class="form-control" placeholder="Max" value="<%= query.maxPrice || '' %>" min="0" style="background: rgba(0, 174, 239,0.04); border: 1px solid rgba(0, 174, 239,0.15); color: #0B1F3A; border-radius: 8px; padding: 10px 14px;">
           </div>
 
-          <!-- Buttons -->
-          <div class="col-12 col-lg-1 d-flex flex-column flex-lg-column gap-2">
-            <button type="submit" class="btn btn-main w-100 py-2 fw-bold" style="border-radius: 8px;"><i class="fas fa-filter"></i></button>
-            <a href="/products" class="btn btn-out w-100 text-center fw-semibold hover-dark" style="border-radius: 8px; padding: 10px;" title="Clear All Filters"><i class="fas fa-times"></i></a>
+          <!-- Actions -->
+          <div class="col-12 d-flex flex-wrap justify-content-between align-items-center gap-2 mt-1">
+            <span id="filterStatus" class="filter-status" aria-live="polite"></span>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-main fw-bold" style="border-radius: 8px; padding: 9px 22px;"><i class="fas fa-filter me-1"></i> Apply</button>
+              <button type="button" id="resetFilters" class="btn btn-outline fw-semibold" style="border-radius: 8px; padding: 9px 22px;"><i class="fas fa-rotate-left me-1"></i> Reset Filters</button>
+            </div>
           </div>
 
         </div>
       </form>
     </div>
 
-    <!-- Product Grid (full width) -->
+    <!-- Product Grid (full width) — swapped in place by the live filter -->
     <div class="row">
       <div class="col-12">
-        <% if (products.length === 0) { %>
-          <div class="text-center py-5">
-            <h4 class="text-muted">No products found matching your criteria.</h4>
-            <a href="/products" class="btn btn-main mt-3">Reset Filters</a>
-          </div>
-        <% } else { %>
-          <div class="row g-4">
-            <% products.forEach(product => { %>
-              <div class="col-6 col-md-4 col-lg-3">
-                <%- include('partials/product-card', { product, returnTo: typeof currentUrl !== 'undefined' ? currentUrl : '/products' }) %>
-              </div>
-            <% }) %>
-          </div>
-
-          <!-- Pagination -->
-          <% if (totalPages > 1) { %>
-            <nav class="mt-5" aria-label="Product navigation">
-              <ul class="pagination justify-content-center custom-pagination">
-                <!-- Previous Button -->
-                <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-                  <a class="page-link" href="?page=<%= currentPage - 1 %><%= query.search ? '&search=' + query.search : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.subcategory ? '&subcategory=' + query.subcategory : '' %><%= query.minPrice ? '&minPrice=' + query.minPrice : '' %><%= query.maxPrice ? '&maxPrice=' + query.maxPrice : '' %>" tabindex="-1">Previous</a>
-                </li>
-
-                <!-- Page Numbers -->
-                <% for(let i = 1; i <= totalPages; i++) { %>
-                  <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                    <a class="page-link" href="?page=<%= i %><%= query.search ? '&search=' + query.search : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.subcategory ? '&subcategory=' + query.subcategory : '' %><%= query.minPrice ? '&minPrice=' + query.minPrice : '' %><%= query.maxPrice ? '&maxPrice=' + query.maxPrice : '' %>"><%= i %></a>
-                  </li>
-                <% } %>
-
-                <!-- Next Button -->
-                <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-                  <a class="page-link" href="?page=<%= currentPage + 1 %><%= query.search ? '&search=' + query.search : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.subcategory ? '&subcategory=' + query.subcategory : '' %><%= query.minPrice ? '&minPrice=' + query.minPrice : '' %><%= query.maxPrice ? '&maxPrice=' + query.maxPrice : '' %>">Next</a>
-                </li>
-              </ul>
-            </nav>
-          <% } %>
-        <% } %>
+        <div id="productResults" class="product-results">
+          <%- include('partials/product-results', { products, totalPages, currentPage, query, currentUrl: typeof currentUrl !== 'undefined' ? currentUrl : '/products' }) %>
+        </div>
       </div>
     </div>
   </div>
@@ -159,29 +127,191 @@
       font-size: 0.85rem;
     }
   }
+
+  /* Live-filter feedback */
+  .product-results {
+    position: relative;
+    transition: opacity 0.15s ease;
+    min-height: 120px;
+  }
+  .product-results.is-loading {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+  .product-results.is-loading::after {
+    content: "";
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    width: 34px;
+    height: 34px;
+    margin-left: -17px;
+    border: 3px solid rgba(20, 93, 160, 0.25);
+    border-top-color: #145DA0;
+    border-radius: 50%;
+    animation: prodspin 0.7s linear infinite;
+  }
+  @keyframes prodspin { to { transform: rotate(360deg); } }
+
+  .filter-status {
+    color: #5C6F82;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
 </style>
 
 <script>
-  const allSubcategories = <%- JSON.stringify(subcategories.map(s => ({ id: s._id, name: s.name, category: s.category }))) %>;
-  const selectedSubcategoryId = <%- JSON.stringify(query.subcategory || '') %>;
+  (function () {
+    const allSubcategories = <%- JSON.stringify(subcategories.map(s => ({ id: s._id, name: s.name, category: s.category }))) %>;
+    const initialSubcategoryId = <%- JSON.stringify(query.subcategory || '') %>;
 
-  function refreshSubcategoryFilterOptions(selectedCategoryId, selectedSubcategoryId) {
-    const subSelect = document.getElementById('subcategoryFilter');
-    const matches = selectedCategoryId
-      ? allSubcategories.filter(s => String(s.category) === String(selectedCategoryId))
-      : allSubcategories;
+    const form       = document.getElementById('filterForm');
+    const results    = document.getElementById('productResults');
+    const searchIn   = form.querySelector('input[name="search"]');
+    const catSel     = document.getElementById('categoryFilter');
+    const subSel     = document.getElementById('subcategoryFilter');
+    const minIn      = form.querySelector('input[name="minPrice"]');
+    const maxIn      = form.querySelector('input[name="maxPrice"]');
+    const resetBtn   = document.getElementById('resetFilters');
+    const statusEl   = document.getElementById('filterStatus');
 
-    subSelect.innerHTML = '<option value="" style="color:#000;">All Subcategories</option>' +
-      matches.map(s => `<option value="${s.id}" style="color:#000;">${s.name}</option>`).join('');
-
-    if (selectedSubcategoryId) {
-      subSelect.value = selectedSubcategoryId;
+    // ---- Subcategory options depend on the chosen category -------------
+    function refreshSubcategoryFilterOptions(selectedCategoryId, keepSubId) {
+      const matches = selectedCategoryId
+        ? allSubcategories.filter(s => String(s.category) === String(selectedCategoryId))
+        : allSubcategories;
+      subSel.innerHTML = '<option value="" style="color:#000;">All Subcategories</option>' +
+        matches.map(s => `<option value="${s.id}" style="color:#000;">${s.name}</option>`).join('');
+      if (keepSubId) subSel.value = keepSubId;
     }
-  }
+    refreshSubcategoryFilterOptions(catSel.value, initialSubcategoryId);
 
-  refreshSubcategoryFilterOptions(document.getElementById('categoryFilter').value, selectedSubcategoryId);
+    // ---- Live filtering ----------------------------------------------
+    let controller = null;
+    let reqId = 0;
 
-  document.getElementById('categoryFilter').addEventListener('change', function() {
-    refreshSubcategoryFilterOptions(this.value, null);
-  });
+    function buildUrl() {
+      const p = new URLSearchParams();
+      if (searchIn.value.trim()) p.set('search', searchIn.value.trim());
+      if (catSel.value)          p.set('category', catSel.value);
+      if (subSel.value)          p.set('subcategory', subSel.value);
+      if (minIn.value !== '')    p.set('minPrice', minIn.value);
+      if (maxIn.value !== '')    p.set('maxPrice', maxIn.value);
+      const qs = p.toString();
+      return '/products' + (qs ? '?' + qs : '');
+    }
+
+    function bindCards(scope) {
+      scope.querySelectorAll('.product-card-clickable').forEach(function (card) {
+        card.addEventListener('click', function (e) {
+          if (e.target.closest('form') || e.target.closest('a')) return;
+          window.location = card.dataset.href;
+        });
+      });
+    }
+
+    function setStatus() {
+      if (!statusEl) return;
+      const empty = results.querySelector('.text-center.py-5');
+      const n = results.querySelectorAll('.product-card').length;
+      statusEl.textContent = empty ? 'No products match your filters'
+                                   : (n + (n === 1 ? ' product' : ' products') + ' on this page');
+    }
+
+    async function run(targetUrl, opts) {
+      opts = opts || {};
+      const mine = ++reqId;
+      if (controller) controller.abort();
+      controller = new AbortController();
+
+      results.classList.add('is-loading');
+      try {
+        const sep = targetUrl.indexOf('?') === -1 ? '?' : '&';
+        const res = await fetch(targetUrl + sep + 'partial=1', {
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+          signal: controller.signal
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const html = await res.text();
+        if (mine !== reqId) return;            // a newer request superseded this one
+        results.innerHTML = html;
+        bindCards(results);
+        setStatus();
+        if (opts.push !== false) history.pushState({ filtered: true }, '', targetUrl);
+        if (opts.scroll) {
+          const top = document.querySelector('.card-box');
+          if (top) window.scrollTo({ top: top.getBoundingClientRect().top + window.pageYOffset - 20, behavior: 'smooth' });
+        }
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        // Network / server hiccup — fall back to a normal navigation so the
+        // user is never stuck with stale results.
+        window.location = targetUrl;
+        return;
+      } finally {
+        if (mine === reqId) results.classList.remove('is-loading');
+      }
+    }
+
+    function applyFilters(opts) { run(buildUrl(), opts); }
+
+    function debounce(fn, ms) {
+      let t;
+      return function () { clearTimeout(t); t = setTimeout(fn, ms); };
+    }
+    const debouncedApply = debounce(function () { applyFilters(); }, 350);
+
+    searchIn.addEventListener('input', debouncedApply);
+    minIn.addEventListener('input', debounce(function () { applyFilters(); }, 450));
+    maxIn.addEventListener('input', debounce(function () { applyFilters(); }, 450));
+
+    catSel.addEventListener('change', function () {
+      refreshSubcategoryFilterOptions(this.value, null);
+      applyFilters();
+    });
+    subSel.addEventListener('change', function () { applyFilters(); });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      applyFilters();
+    });
+
+    function doReset() {
+      searchIn.value = '';
+      catSel.value = '';
+      minIn.value = '';
+      maxIn.value = '';
+      refreshSubcategoryFilterOptions('', null);
+      applyFilters();
+    }
+    if (resetBtn) resetBtn.addEventListener('click', doReset);
+
+    // Pagination + empty-state reset button live inside the swapped region.
+    results.addEventListener('click', function (e) {
+      const pageLink = e.target.closest('a.page-link');
+      if (pageLink) {
+        if (pageLink.closest('.page-item.disabled')) { e.preventDefault(); return; }
+        e.preventDefault();
+        run(new URL(pageLink.getAttribute('href'), window.location.href).toString(), { scroll: true });
+        return;
+      }
+      if (e.target.closest('[data-reset-filters]')) {
+        e.preventDefault();
+        doReset();
+      }
+    });
+
+    // Back / forward buttons — rebuild the form state from the URL, no push.
+    window.addEventListener('popstate', function () {
+      const q = new URLSearchParams(window.location.search);
+      searchIn.value = q.get('search') || '';
+      catSel.value   = q.get('category') || '';
+      refreshSubcategoryFilterOptions(catSel.value, q.get('subcategory') || '');
+      minIn.value    = q.get('minPrice') || '';
+      maxIn.value    = q.get('maxPrice') || '';
+      run(window.location.pathname + window.location.search, { push: false });
+    });
+
+    setStatus();
+  })();
 </script>

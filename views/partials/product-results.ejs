@@ -1,0 +1,46 @@
+<%
+  // Shared query-string for pagination links (keeps active filters on page change)
+  const pageQs = (p) => {
+    const parts = ['page=' + p];
+    if (query.search)      parts.push('search='      + encodeURIComponent(query.search));
+    if (query.category)    parts.push('category='    + encodeURIComponent(query.category));
+    if (query.subcategory) parts.push('subcategory=' + encodeURIComponent(query.subcategory));
+    if (query.minPrice)    parts.push('minPrice='    + encodeURIComponent(query.minPrice));
+    if (query.maxPrice)    parts.push('maxPrice='    + encodeURIComponent(query.maxPrice));
+    return '?' + parts.join('&');
+  };
+%>
+<% if (products.length === 0) { %>
+  <div class="text-center py-5">
+    <h4 class="text-muted">No products found matching your criteria.</h4>
+    <button type="button" class="btn btn-main mt-3" data-reset-filters>Reset Filters</button>
+  </div>
+<% } else { %>
+  <div class="row g-4">
+    <% products.forEach(product => { %>
+      <div class="col-6 col-md-4 col-lg-3">
+        <%- include('product-card', { product, returnTo: typeof currentUrl !== 'undefined' ? currentUrl : '/products' }) %>
+      </div>
+    <% }) %>
+  </div>
+
+  <% if (totalPages > 1) { %>
+    <nav class="mt-5" aria-label="Product navigation">
+      <ul class="pagination justify-content-center custom-pagination">
+        <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="<%= pageQs(currentPage - 1) %>" tabindex="-1">Previous</a>
+        </li>
+
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+            <a class="page-link" href="<%= pageQs(i) %>"><%= i %></a>
+          </li>
+        <% } %>
+
+        <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="<%= pageQs(currentPage + 1) %>">Next</a>
+        </li>
+      </ul>
+    </nav>
+  <% } %>
+<% } %>
