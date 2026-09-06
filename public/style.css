@@ -1479,10 +1479,15 @@ h2 {
   margin-top: 2px;
 }
 
-/* Centred footer columns (Quick Links / Services / Contact Info) */
+/* Footer columns: heading centred, list content left-aligned */
+.footer-col-center .footer-links,
+.footer-col-center .footer-contact {
+  text-align: left;
+}
+
 .footer-col-center .footer-contact li {
-  justify-content: center;
-  text-align: center;
+  justify-content: flex-start;
+  text-align: left;
 }
 
 .footer-bottom {
