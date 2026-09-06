@@ -1479,7 +1479,22 @@ h2 {
   margin-top: 2px;
 }
 
-/* Footer columns: heading centred, list content left-aligned */
+/* Footer columns: the heading sits centred over its link list, while the
+   list itself stays left-aligned. The inline-block wrapper shrink-wraps to
+   the list width and is centred in the column; the heading is then centred
+   within that wrapper. */
+.footer-col-inner {
+  display: inline-block;
+  text-align: left;
+}
+
+.footer-col-inner .footer-head {
+  display: block;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .footer-col-center .footer-links,
 .footer-col-center .footer-contact {
   text-align: left;

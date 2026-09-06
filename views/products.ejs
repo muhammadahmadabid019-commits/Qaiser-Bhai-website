@@ -55,14 +55,13 @@
             <input type="number" name="maxPrice" class="form-control" placeholder="Max" value="<%= query.maxPrice || '' %>" min="0" style="background: rgba(0, 174, 239,0.04); border: 1px solid rgba(0, 174, 239,0.15); color: #0B1F3A; border-radius: 8px; padding: 10px 14px;">
           </div>
 
-          <!-- Actions -->
+          <!-- Actions — filters apply automatically, so no "Apply" button -->
           <div class="col-12 d-flex flex-wrap justify-content-between align-items-center gap-2 mt-1">
             <span id="filterStatus" class="filter-status" aria-live="polite"></span>
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-main fw-bold" style="border-radius: 8px; padding: 9px 22px;"><i class="fas fa-filter me-1"></i> Apply</button>
-              <button type="button" id="resetFilters" class="btn btn-outline fw-semibold" style="border-radius: 8px; padding: 9px 22px;"><i class="fas fa-rotate-left me-1"></i> Reset Filters</button>
-            </div>
+            <button type="button" id="resetFilters" class="btn btn-outline fw-semibold" style="border-radius: 8px; padding: 9px 22px;"><i class="fas fa-rotate-left me-1"></i> Reset Filters</button>
           </div>
+          <!-- keeps Enter-to-search working with no visible button -->
+          <button type="submit" class="visually-hidden" tabindex="-1" aria-hidden="true"></button>
 
         </div>
       </form>
